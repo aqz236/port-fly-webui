@@ -6,12 +6,15 @@ import { Project } from "~/components/features/projects";
 import { Group } from "~/components/features/groups";
 import { Host } from "~/components/features/hosts";
 import { PortForward } from "~/components/features/ports";
+import { apiClient } from "~/lib/api/client";
+import type { CreateProjectData } from "~/types/api";
 
 interface DashboardProps {
   projects: Project[];
+  onProjectsUpdate?: () => void; // 添加项目更新回调
 }
 
-export function Dashboard({ projects }: DashboardProps) {
+export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
   const [selected, setSelected] = useState<SelectedItem>({ type: 'overview' });
 
   const getSelectedProject = (): Project | null => {
@@ -84,6 +87,26 @@ export function Dashboard({ projects }: DashboardProps) {
     // TODO: 实现添加端口转发逻辑
   };
 
+  // 创建项目处理函数
+  const handleCreateProject = async (data: CreateProjectData) => {
+    try {
+      console.log('Creating project with data:', data);
+      const newProject = await apiClient.createProject(data);
+      console.log('Project created successfully:', newProject);
+      
+      // 触发项目列表更新
+      if (onProjectsUpdate) {
+        onProjectsUpdate();
+      }
+      
+      // 可选：自动选择新创建的项目
+      setSelected({ type: 'project', projectId: newProject.id });
+    } catch (error) {
+      console.error('Failed to create project:', error);
+      throw error; // 重新抛出错误，让Dialog组件处理
+    }
+  };
+
   const renderMainContent = () => {
     switch (selected.type) {
       case 'project': {
@@ -129,6 +152,7 @@ export function Dashboard({ projects }: DashboardProps) {
           projects={projects}
           selected={selected}
           onSelect={setSelected}
+          onCreateProject={handleCreateProject}
         />
         
         <SidebarInset className="flex-1">

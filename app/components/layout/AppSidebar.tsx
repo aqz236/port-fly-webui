@@ -20,6 +20,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
 import {
   Home,
@@ -30,8 +37,13 @@ import {
   FolderOpen,
   Folder,
   ChevronRight,
+  FileText,
+  Upload,
+  Download,
 } from "lucide-react";
+import { CreateProjectDialog } from "~/components/dialogs";
 import { Project } from "~/components/features/projects";
+import type { CreateProjectData } from "~/types/api";
 
 export type ViewType = 'overview' | 'project' | 'group';
 
@@ -45,10 +57,12 @@ interface AppSidebarProps {
   projects: Project[];
   selected: SelectedItem;
   onSelect: (selected: SelectedItem) => void;
+  onCreateProject?: (data: CreateProjectData) => Promise<void>;
 }
 
-export function AppSidebar({ projects, selected, onSelect }: AppSidebarProps) {
+export function AppSidebar({ projects, selected, onSelect, onCreateProject }: AppSidebarProps) {
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set([1]));
+  const [showCreateProjectDialog, setShowCreateProjectDialog] = useState(false);
 
   const toggleProject = (projectId: number) => {
     const newExpanded = new Set(expandedProjects);
@@ -58,6 +72,20 @@ export function AppSidebar({ projects, selected, onSelect }: AppSidebarProps) {
       newExpanded.add(projectId);
     }
     setExpandedProjects(newExpanded);
+  };
+
+  const handleCreateProject = () => {
+    setShowCreateProjectDialog(true);
+  };
+
+  const handleImportProject = () => {
+    // TODO: 实现导入项目功能
+    console.log('Import project');
+  };
+
+  const handleImportFromToby = () => {
+    // TODO: 实现从Toby导入功能
+    console.log('Import from Toby');
   };
 
   return (
@@ -94,9 +122,28 @@ export function AppSidebar({ projects, selected, onSelect }: AppSidebarProps) {
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center justify-between">
             <span>项目</span>
-            <Button variant="ghost" size="icon" className="h-4 w-4">
-              <Plus className="h-3 w-3" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-4 w-4">
+                  <Plus className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48"  side="right">
+                <DropdownMenuItem onClick={handleCreateProject}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  创建项目
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleImportProject}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  导入项目
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleImportFromToby}>
+                  <Download className="h-4 w-4 mr-2" />
+                  从 Toby 导入
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -184,6 +231,13 @@ export function AppSidebar({ projects, selected, onSelect }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* 创建项目对话框 */}
+      <CreateProjectDialog
+        open={showCreateProjectDialog}
+        onOpenChange={setShowCreateProjectDialog}
+        onCreateProject={onCreateProject}
+      />
     </Sidebar>
   );
 }
