@@ -1,26 +1,39 @@
+// PortFly API Client v2
+// 支持新架构：Project -> Group -> (Host + Port)
+
 import type {
   ApiResponse,
-  HostGroup,
-  CreateHostGroupData,
-  UpdateHostGroupData,
-  HostGroupStats,
+  Project,
+  CreateProjectData,
+  UpdateProjectData,
+  ProjectStats,
+  Group,
+  CreateGroupData,
+  UpdateGroupData,
+  GroupStats,
   Host,
   CreateHostData,
   UpdateHostData,
-  PortGroup,
-  CreatePortGroupData,
-  UpdatePortGroupData,
-  PortGroupStats,
+  HostStats,
   PortForward,
   CreatePortForwardData,
   UpdatePortForwardData,
+  PortForwardStats,
   TunnelSession,
   CreateTunnelSessionData,
   UpdateTunnelSessionData,
+  SessionStats,
   SearchParams,
   PaginatedResponse,
-  HealthStatus
-} from '~/types/api'
+  HealthStatus,
+  SystemStats,
+  BulkOperationRequest,
+  BulkOperationResponse,
+  ExportData,
+  ImportResult,
+  UserPreferences,
+  UpdateUserPreferencesData
+} from '../../types/api'
 
 // API配置
 export interface ApiConfig {
@@ -35,6 +48,18 @@ export interface RequestConfig {
   headers?: Record<string, string>
   body?: any
   params?: Record<string, any>
+}
+
+// API错误类
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status?: number,
+    public code?: string
+  ) {
+    super(message)
+    this.name = 'ApiError'
+  }
 }
 
 // 默认配置
@@ -101,7 +126,15 @@ export class ApiClient {
         return {} as T
       }
 
-      return JSON.parse(text)
+      const result = JSON.parse(text) as ApiResponse<T>
+      
+      // 检查API响应是否成功
+      if (!result.success) {
+        throw new ApiError(result.error || 'API request failed')
+      }
+      
+      // 返回实际数据
+      return result.data as T
     } catch (error) {
       clearTimeout(timeoutId)
       
@@ -120,49 +153,90 @@ export class ApiClient {
     }
   }
 
-  // 健康检查
+  // ===== 健康检查 =====
+  
   async health(): Promise<HealthStatus> {
     return this.request<HealthStatus>('/health')
   }
 
-  // ===== 主机分组 API =====
+  async getSystemStats(): Promise<SystemStats> {
+    return this.request<SystemStats>('/api/v1/system/stats')
+  }
+
+  // ===== 项目管理 =====
   
-  async getHostGroups(): Promise<HostGroup[]> {
-    return this.request<HostGroup[]>('/api/v1/host-groups')
+  async getProjects(): Promise<Project[]> {
+    return this.request<Project[]>('/api/v1/projects')
   }
 
-  async getHostGroup(id: number): Promise<HostGroup> {
-    return this.request<HostGroup>(`/api/v1/host-groups/${id}`)
+  async getProject(id: number): Promise<Project> {
+    return this.request<Project>(`/api/v1/projects/${id}`)
   }
 
-  async createHostGroup(data: CreateHostGroupData): Promise<HostGroup> {
-    return this.request<HostGroup>('/api/v1/host-groups', {
+  async createProject(data: CreateProjectData): Promise<Project> {
+    return this.request<Project>('/api/v1/projects', {
       method: 'POST',
       body: data,
     })
   }
 
-  async updateHostGroup(id: number, data: UpdateHostGroupData): Promise<HostGroup> {
-    return this.request<HostGroup>(`/api/v1/host-groups/${id}`, {
+  async updateProject(id: number, data: UpdateProjectData): Promise<Project> {
+    return this.request<Project>(`/api/v1/projects/${id}`, {
       method: 'PUT',
       body: data,
     })
   }
 
-  async deleteHostGroup(id: number): Promise<void> {
-    return this.request<void>(`/api/v1/host-groups/${id}`, {
+  async deleteProject(id: number): Promise<void> {
+    return this.request<void>(`/api/v1/projects/${id}`, {
       method: 'DELETE',
     })
   }
 
-  async getHostGroupStats(id: number): Promise<HostGroupStats> {
-    return this.request<HostGroupStats>(`/api/v1/host-groups/${id}/stats`)
+  async getProjectStats(id: number): Promise<ProjectStats> {
+    return this.request<ProjectStats>(`/api/v1/projects/${id}/stats`)
   }
 
-  // ===== 主机 API =====
+  // ===== 组管理 =====
   
-  async getHosts(): Promise<Host[]> {
-    return this.request<Host[]>('/api/v1/hosts')
+  async getGroups(projectId?: number): Promise<Group[]> {
+    const params = projectId ? { project_id: projectId } : undefined
+    return this.request<Group[]>('/api/v1/groups', { params })
+  }
+
+  async getGroup(id: number): Promise<Group> {
+    return this.request<Group>(`/api/v1/groups/${id}`)
+  }
+
+  async createGroup(data: CreateGroupData): Promise<Group> {
+    return this.request<Group>('/api/v1/groups', {
+      method: 'POST',
+      body: data,
+    })
+  }
+
+  async updateGroup(id: number, data: UpdateGroupData): Promise<Group> {
+    return this.request<Group>(`/api/v1/groups/${id}`, {
+      method: 'PUT',
+      body: data,
+    })
+  }
+
+  async deleteGroup(id: number): Promise<void> {
+    return this.request<void>(`/api/v1/groups/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  async getGroupStats(id: number): Promise<GroupStats> {
+    return this.request<GroupStats>(`/api/v1/groups/${id}/stats`)
+  }
+
+  // ===== 主机管理 =====
+  
+  async getHosts(groupId?: number): Promise<Host[]> {
+    const params = groupId ? { group_id: groupId } : undefined
+    return this.request<Host[]>('/api/v1/hosts', { params })
   }
 
   async getHost(id: number): Promise<Host> {
@@ -189,50 +263,25 @@ export class ApiClient {
     })
   }
 
-  async searchHosts(params: SearchParams): Promise<Host[]> {
-    return this.request<Host[]>('/api/v1/hosts/search', {
-      params,
-    })
+  async getHostStats(id: number): Promise<HostStats> {
+    return this.request<HostStats>(`/api/v1/hosts/${id}/stats`)
   }
 
-  // ===== 端口分组 API =====
-  
-  async getPortGroups(): Promise<PortGroup[]> {
-    return this.request<PortGroup[]>('/api/v1/port-groups')
-  }
-
-  async getPortGroup(id: number): Promise<PortGroup> {
-    return this.request<PortGroup>(`/api/v1/port-groups/${id}`)
-  }
-
-  async createPortGroup(data: CreatePortGroupData): Promise<PortGroup> {
-    return this.request<PortGroup>('/api/v1/port-groups', {
+  async testHostConnection(id: number): Promise<{ success: boolean; message: string }> {
+    return this.request<{ success: boolean; message: string }>(`/api/v1/hosts/${id}/test`, {
       method: 'POST',
-      body: data,
     })
   }
 
-  async updatePortGroup(id: number, data: UpdatePortGroupData): Promise<PortGroup> {
-    return this.request<PortGroup>(`/api/v1/port-groups/${id}`, {
-      method: 'PUT',
-      body: data,
-    })
+  async searchHosts(params: SearchParams): Promise<Host[]> {
+    return this.request<Host[]>('/api/v1/hosts/search', { params })
   }
 
-  async deletePortGroup(id: number): Promise<void> {
-    return this.request<void>(`/api/v1/port-groups/${id}`, {
-      method: 'DELETE',
-    })
-  }
-
-  async getPortGroupStats(id: number): Promise<PortGroupStats> {
-    return this.request<PortGroupStats>(`/api/v1/port-groups/${id}/stats`)
-  }
-
-  // ===== 端口转发 API =====
+  // ===== 端口转发管理 =====
   
-  async getPortForwards(): Promise<PortForward[]> {
-    return this.request<PortForward[]>('/api/v1/port-forwards')
+  async getPortForwards(groupId?: number): Promise<PortForward[]> {
+    const params = groupId ? { group_id: groupId } : undefined
+    return this.request<PortForward[]>('/api/v1/port-forwards', { params })
   }
 
   async getPortForward(id: number): Promise<PortForward> {
@@ -259,13 +308,15 @@ export class ApiClient {
     })
   }
 
-  async searchPortForwards(params: SearchParams): Promise<PortForward[]> {
-    return this.request<PortForward[]>('/api/v1/port-forwards/search', {
-      params,
-    })
+  async getPortForwardStats(id: number): Promise<PortForwardStats> {
+    return this.request<PortForwardStats>(`/api/v1/port-forwards/${id}/stats`)
   }
 
-  // ===== 隧道会话 API =====
+  async searchPortForwards(params: SearchParams): Promise<PortForward[]> {
+    return this.request<PortForward[]>('/api/v1/port-forwards/search', { params })
+  }
+
+  // ===== 隧道会话管理 =====
   
   async getTunnelSessions(): Promise<TunnelSession[]> {
     return this.request<TunnelSession[]>('/api/v1/sessions')
@@ -299,30 +350,83 @@ export class ApiClient {
     })
   }
 
-  async startTunnel(sessionId: number): Promise<void> {
-    return this.request<void>(`/api/v1/sessions/${sessionId}/start`, {
+  async startTunnel(id: number): Promise<TunnelSession> {
+    return this.request<TunnelSession>(`/api/v1/sessions/${id}/start`, {
       method: 'POST',
     })
   }
 
-  async stopTunnel(sessionId: number): Promise<void> {
-    return this.request<void>(`/api/v1/sessions/${sessionId}/stop`, {
+  async stopTunnel(id: number): Promise<TunnelSession> {
+    return this.request<TunnelSession>(`/api/v1/sessions/${id}/stop`, {
       method: 'POST',
     })
   }
-}
 
-// TODO 自定义错误类 后续移到types/api.ts
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status?: number,
-    public code?: string
-  ) {
-    super(message)
-    this.name = 'ApiError'
+  async getSessionStats(): Promise<SessionStats> {
+    return this.request<SessionStats>('/api/v1/sessions/stats')
+  }
+
+  // ===== 批量操作 =====
+  
+  async bulkOperation(request: BulkOperationRequest): Promise<BulkOperationResponse> {
+    return this.request<BulkOperationResponse>('/api/v1/bulk', {
+      method: 'POST',
+      body: request,
+    })
+  }
+
+  // ===== 导入导出 =====
+  
+  async exportData(projectIds?: number[]): Promise<ExportData> {
+    const params = projectIds ? { project_ids: projectIds.join(',') } : undefined
+    return this.request<ExportData>('/api/v1/export', { params })
+  }
+
+  async importData(data: ExportData): Promise<ImportResult> {
+    return this.request<ImportResult>('/api/v1/import', {
+      method: 'POST',
+      body: data,
+    })
+  }
+
+  // ===== 用户偏好设置 =====
+  
+  async getUserPreferences(): Promise<UserPreferences> {
+    return this.request<UserPreferences>('/api/v1/preferences')
+  }
+
+  async updateUserPreferences(data: UpdateUserPreferencesData): Promise<UserPreferences> {
+    return this.request<UserPreferences>('/api/v1/preferences', {
+      method: 'PUT',
+      body: data,
+    })
+  }
+
+  // ===== WebSocket 连接 =====
+  
+  createWebSocket(protocols?: string[]): WebSocket {
+    const wsUrl = this.config.baseURL.replace(/^http/, 'ws') + '/ws'
+    return new WebSocket(wsUrl, protocols)
+  }
+
+  // ===== 兼容性方法（废弃但保留） =====
+  
+  /**
+   * @deprecated 使用 getGroups() 替代
+   */
+  async getHostGroups(): Promise<any[]> {
+    console.warn('getHostGroups() is deprecated, use getGroups() instead')
+    return this.getGroups()
+  }
+
+  /**
+   * @deprecated 使用 getGroups() 替代
+   */
+  async getPortGroups(): Promise<any[]> {
+    console.warn('getPortGroups() is deprecated, use getGroups() instead')
+    return this.getGroups()
   }
 }
 
-// 导出默认实例
+// 创建默认客户端实例
 export const apiClient = new ApiClient()
