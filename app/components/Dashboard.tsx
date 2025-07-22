@@ -2,12 +2,10 @@ import { useState } from "react";
 import { SidebarProvider, SidebarInset } from "~/components/ui/sidebar";
 import { AppSidebar, AppHeader, ViewType, SelectedItem } from "~/components/layout";
 import { OverviewView, ProjectView, GroupView } from "~/components/views";
-import { Project } from "~/components/features/projects";
-import { Group } from "~/components/features/groups";
-import { Host } from "~/components/features/hosts";
-import { PortForward } from "~/components/features/ports";
+import { ProjectCard } from "~/components/features/projects";
+import { GroupCard } from "~/components/features/groups";
 import { apiClient } from "~/lib/api/client";
-import type { CreateProjectData } from "~/types/api";
+import type { CreateProjectData, MoveProjectParams, Project, Group, Host, PortForward } from "~/types/api";
 
 interface DashboardProps {
   projects: Project[];
@@ -26,7 +24,7 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
 
   const getSelectedGroup = (): Group | null => {
     const project = getSelectedProject();
-    if (project && selected.groupId) {
+    if (project && project.groups && selected.groupId) {
       return project.groups.find(g => g.id === selected.groupId) || null;
     }
     return null;
@@ -107,6 +105,23 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
     }
   };
 
+  // 移动项目处理函数
+  const handleMoveProject = async (params: MoveProjectParams) => {
+    try {
+      console.log('Moving project with params:', params);
+      await apiClient.moveProject(params);
+      console.log('Project moved successfully');
+      
+      // 触发项目列表更新
+      if (onProjectsUpdate) {
+        onProjectsUpdate();
+      }
+    } catch (error) {
+      console.error('Failed to move project:', error);
+      throw error;
+    }
+  };
+
   const renderMainContent = () => {
     switch (selected.type) {
       case 'project': {
@@ -153,6 +168,7 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
           selected={selected}
           onSelect={setSelected}
           onCreateProject={handleCreateProject}
+          onMoveProject={handleMoveProject}
         />
         
         <SidebarInset className="flex-1">

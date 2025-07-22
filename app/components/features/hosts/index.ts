@@ -1,2 +1,2 @@
-export { HostCard, type Host } from './HostCard';
+export { HostCard } from './HostCard';
 export { HostList } from './HostList';

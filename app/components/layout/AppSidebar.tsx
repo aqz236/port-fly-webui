@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
   SidebarProvider,
   SidebarInset,
@@ -42,8 +44,8 @@ import {
   Download,
 } from "lucide-react";
 import { CreateProjectDialog } from "~/components/dialogs";
-import { Project } from "~/components/features/projects";
-import type { CreateProjectData } from "~/types/api";
+import type { CreateProjectData, MoveProjectParams, Project } from "~/types/api";
+import { DraggableProjectNode } from "./DraggableProjectNode";
 
 export type ViewType = 'overview' | 'project' | 'group';
 
@@ -58,9 +60,10 @@ interface AppSidebarProps {
   selected: SelectedItem;
   onSelect: (selected: SelectedItem) => void;
   onCreateProject?: (data: CreateProjectData) => Promise<void>;
+  onMoveProject?: (params: MoveProjectParams) => Promise<void>;
 }
 
-export function AppSidebar({ projects, selected, onSelect, onCreateProject }: AppSidebarProps) {
+export function AppSidebar({ projects, selected, onSelect, onCreateProject, onMoveProject }: AppSidebarProps) {
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set([1]));
   const [showCreateProjectDialog, setShowCreateProjectDialog] = useState(false);
 
@@ -88,9 +91,71 @@ export function AppSidebar({ projects, selected, onSelect, onCreateProject }: Ap
     console.log('Import from Toby');
   };
 
+  const handleMoveProject = async (dragItem: any, dropResult: any) => {
+    if (!onMoveProject) return;
+    
+    try {
+      let newParentId: number | undefined;
+      let position = 0;
+
+      switch (dropResult.position) {
+        case 'inside':
+          newParentId = dropResult.targetId;
+          break;
+        case 'before':
+        case 'after':
+          newParentId = dropResult.targetParentId;
+          // TODO: 计算具体位置
+          break;
+      }
+
+      const params: MoveProjectParams = {
+        project_id: dragItem.id,
+        parent_id: newParentId,
+        position,
+      };
+
+      await onMoveProject(params);
+      console.log('Project moved successfully');
+    } catch (error) {
+      console.error('Failed to move project:', error);
+    }
+  };
+
+  // 构建项目树结构
+  const buildProjectTree = (projects: Project[]): Project[] => {
+    const projectMap = new Map<number, Project>();
+    const rootProjects: Project[] = [];
+
+    // 先创建所有项目的映射
+    projects.forEach(project => {
+      projectMap.set(project.id, { ...project, children: [] });
+    });
+
+    // 构建树状结构
+    projects.forEach(project => {
+      const projectNode = projectMap.get(project.id)!;
+      
+      if (project.parent_id) {
+        const parent = projectMap.get(project.parent_id);
+        if (parent) {
+          if (!parent.children) parent.children = [];
+          parent.children.push(projectNode);
+        }
+      } else {
+        rootProjects.push(projectNode);
+      }
+    });
+
+    return rootProjects;
+  };
+
+  const projectTree = buildProjectTree(projects);
+
   return (
-    <Sidebar className="border-r">
-      <SidebarContent>
+    <DndProvider backend={HTML5Backend}>
+      <Sidebar className="border-r">
+        <SidebarContent>
         <div className="p-4">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -147,65 +212,17 @@ export function AppSidebar({ projects, selected, onSelect, onCreateProject }: Ap
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {projects.map((project) => (
-                <Collapsible
+              {projectTree.map((project) => (
+                <DraggableProjectNode
                   key={project.id}
-                  open={expandedProjects.has(project.id)}
-                  onOpenChange={() => toggleProject(project.id)}
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton className="w-full justify-between">
-                        <div className="flex items-center gap-2">
-                          {expandedProjects.has(project.id) ? (
-                            <FolderOpen className="w-4 h-4" />
-                          ) : (
-                            <Folder className="w-4 h-4" />
-                          )}
-                          <span>{project.name}</span>
-                        </div>
-                        <ChevronRight className="w-4 h-4 transition-transform data-[state=open]:rotate-90" />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            onClick={() => onSelect({ type: 'project', projectId: project.id })}
-                            isActive={selected.type === 'project' && selected.projectId === project.id}
-                          >
-                            <FolderOpen className="w-4 h-4" />
-                            <span>项目概览</span>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        {project.groups.map((group) => (
-                          <SidebarMenuSubItem key={group.id}>
-                            <SidebarMenuSubButton
-                              onClick={() => onSelect({ 
-                                type: 'group', 
-                                projectId: project.id, 
-                                groupId: group.id 
-                              })}
-                              isActive={
-                                selected.type === 'group' && 
-                                selected.projectId === project.id && 
-                                selected.groupId === group.id
-                              }
-                            >
-                              <div className="flex items-center gap-2">
-                                <div 
-                                  className="w-2 h-2 rounded-full" 
-                                  style={{ backgroundColor: group.color }}
-                                />
-                                <span>{group.name}</span>
-                              </div>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
+                  project={project}
+                  level={project.level || 0}
+                  isExpanded={expandedProjects.has(project.id)}
+                  onToggle={toggleProject}
+                  onSelect={onSelect}
+                  selected={selected}
+                  onMoveProject={handleMoveProject}
+                />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -239,5 +256,6 @@ export function AppSidebar({ projects, selected, onSelect, onCreateProject }: Ap
         onCreateProject={onCreateProject}
       />
     </Sidebar>
+    </DndProvider>
   );
 }

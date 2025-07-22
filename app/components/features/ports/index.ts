@@ -1,2 +1,2 @@
-export { PortForwardCard, type PortForward } from './PortForwardCard';
+export { PortForwardCard } from './PortForwardCard';
 export { PortForwardList } from './PortForwardList';

@@ -1,2 +1,2 @@
-export { ProjectCard, type Project } from './ProjectCard';
+export { ProjectCard } from './ProjectCard';
 export { ProjectList } from './ProjectList';

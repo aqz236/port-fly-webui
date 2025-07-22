@@ -1,6 +1,7 @@
 import { StatCard } from "~/components/common/StatCard";
-import { ProjectList, Project } from "~/components/features/projects";
+import { ProjectList } from "~/components/features/projects";
 import { FolderOpen, Server, Zap, Activity } from "lucide-react";
+import type { Project, Group } from "~/types/api";
 
 interface OverviewViewProps {
   projects: Project[];
@@ -8,15 +9,15 @@ interface OverviewViewProps {
 }
 
 export function OverviewView({ projects, onProjectSelect }: OverviewViewProps) {
-  // 计算统计数据
-  const totalGroups = projects.reduce((sum, p) => sum + p.groups.length, 0);
-  const totalHosts = projects.reduce((sum, p) => 
-    sum + p.groups.reduce((gSum, g) => gSum + g.hosts.length, 0), 0);
-  const totalPorts = projects.reduce((sum, p) => 
-    sum + p.groups.reduce((gSum, g) => gSum + g.port_forwards.length, 0), 0);
-  const activeConnections = projects.reduce((sum, p) => 
-    sum + p.groups.reduce((gSum, g) => 
-      gSum + g.port_forwards.filter((pf: any) => pf.status === 'active').length, 0), 0);
+  // 计算统计数据 - 添加空值检查和明确类型
+  const totalGroups = projects.reduce((sum: number, p: Project) => sum + (p.groups?.length || 0), 0);
+  const totalHosts = projects.reduce((sum: number, p: Project) => 
+    sum + (p.groups?.reduce((gSum: number, g: Group) => gSum + (g.hosts?.length || 0), 0) || 0), 0);
+  const totalPorts = projects.reduce((sum: number, p: Project) => 
+    sum + (p.groups?.reduce((gSum: number, g: Group) => gSum + (g.port_forwards?.length || 0), 0) || 0), 0);
+  const activeConnections = projects.reduce((sum: number, p: Project) => 
+    sum + (p.groups?.reduce((gSum: number, g: Group) => 
+      gSum + (g.port_forwards?.filter((pf: any) => pf.status === 'active')?.length || 0), 0) || 0), 0);
 
   return (
     <div className="space-y-6">

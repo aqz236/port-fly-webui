@@ -1,8 +1,8 @@
 import { Button } from "~/components/ui/button";
 import { StatCard } from "~/components/common/StatCard";
-import { GroupList, Group } from "~/components/features/groups";
-import { Project } from "~/components/features/projects";
+import { GroupList } from "~/components/features/groups";
 import { Plus } from "lucide-react";
+import type { Project, Group } from "~/types/api";
 
 interface ProjectViewProps {
   project: Project;
@@ -11,8 +11,8 @@ interface ProjectViewProps {
 }
 
 export function ProjectView({ project, onGroupSelect, onAddGroup }: ProjectViewProps) {
-  const totalHosts = project.groups.reduce((sum, g) => sum + g.hosts.length, 0);
-  const totalPorts = project.groups.reduce((sum, g) => sum + g.port_forwards.length, 0);
+  const totalHosts = (project.groups || []).reduce((sum: number, g: Group) => sum + (g.hosts?.length || 0), 0);
+  const totalPorts = (project.groups || []).reduce((sum: number, g: Group) => sum + (g.port_forwards?.length || 0), 0);
 
   return (
     <div className="space-y-6">
@@ -37,7 +37,7 @@ export function ProjectView({ project, onGroupSelect, onAddGroup }: ProjectViewP
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           title="组数量"
-          value={project.groups.length}
+          value={project.groups?.length || 0}
           icon={Plus}
         />
         <StatCard
@@ -56,7 +56,7 @@ export function ProjectView({ project, onGroupSelect, onAddGroup }: ProjectViewP
       <div>
         <h3 className="text-lg font-medium mb-4">组列表</h3>
         <GroupList 
-          groups={project.groups}
+          groups={project.groups || []}
           onGroupClick={(group) => onGroupSelect(group.id)}
         />
       </div>

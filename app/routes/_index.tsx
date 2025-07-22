@@ -1,6 +1,8 @@
 import type { MetaFunction } from "@remix-run/node";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dashboard } from "~/components/Dashboard";
-import { Project } from "~/types/dashboard";
+import { apiClient } from "~/lib/api/client";
+import type { Project } from "~/types/api";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,71 +11,38 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-// 模拟数据
-const mockProjects: Project[] = [
-  {
-    id: 1,
-    name: "生产环境",
-    description: "生产服务器和服务",
-    color: "#ef4444",
-    icon: "server",
-    is_default: true,
-    groups: [
-      {
-        id: 1,
-        name: "Web服务器",
-        description: "前端和API服务器",
-        color: "#10b981",
-        icon: "server",
-        hosts: [
-          { id: 1, name: "web-01", hostname: "192.168.1.10", status: "connected" },
-          { id: 2, name: "web-02", hostname: "192.168.1.11", status: "disconnected" },
-        ],
-        port_forwards: [
-          { id: 1, name: "HTTP", type: "local", local_port: 8080, remote_port: 80, status: "active" },
-          { id: 2, name: "HTTPS", type: "local", local_port: 8443, remote_port: 443, status: "inactive" },
-        ]
-      },
-      {
-        id: 2,
-        name: "数据库",
-        description: "数据库服务器",
-        color: "#6366f1",
-        icon: "database",
-        hosts: [
-          { id: 3, name: "db-master", hostname: "192.168.1.20", status: "connected" },
-        ],
-        port_forwards: [
-          { id: 3, name: "MySQL", type: "local", local_port: 3306, remote_port: 3306, status: "active" },
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: "开发环境",
-    description: "开发和测试环境",
-    color: "#6366f1",
-    icon: "code",
-    is_default: false,
-    groups: [
-      {
-        id: 3,
-        name: "测试服务器",
-        description: "测试环境服务器",
-        color: "#f59e0b",
-        icon: "server",
-        hosts: [
-          { id: 4, name: "test-01", hostname: "192.168.2.10", status: "connected" },
-        ],
-        port_forwards: [
-          { id: 4, name: "API", type: "local", local_port: 3000, remote_port: 3000, status: "active" },
-        ]
-      }
-    ]
-  }
-];
-
 export default function Index() {
-  return <Dashboard projects={mockProjects} />;
+  const queryClient = useQueryClient();
+  
+  // 使用TanStack Query获取项目数据
+  const { data: projects = [], isLoading, error } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => apiClient.getProjects(), // 移除参数，使用默认的GetProjects方法
+    select: (data) => data as Project[] // 确保返回Project[]类型
+  });
+
+  // 项目更新回调函数
+  const handleProjectsUpdate = () => {
+    queryClient.invalidateQueries({ queryKey: ['projects'] });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-lg">加载中...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-lg text-red-500">
+          加载失败: {error instanceof Error ? error.message : '未知错误'}
+        </div>
+      </div>
+    );
+  }
+
+  return <Dashboard projects={projects} onProjectsUpdate={handleProjectsUpdate} />;
 }

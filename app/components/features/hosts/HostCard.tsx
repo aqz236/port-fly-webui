@@ -2,13 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Badge } from "~/components/ui/badge";
 import { StatusBadge, StatusType } from "~/components/common/StatusBadge";
 import { ActionButton } from "~/components/common/ActionButton";
-
-export interface Host {
-  id: number;
-  name: string;
-  hostname: string;
-  status: 'connected' | 'disconnected';
-}
+import type { Host } from "~/types/api";
 
 interface HostCardProps {
   host: Host;
@@ -18,15 +12,27 @@ interface HostCardProps {
 
 export function HostCard({ host, onEdit, onToggleConnection }: HostCardProps) {
   const isConnected = host.status === 'connected';
+  const getStatusText = () => {
+    switch (host.status) {
+      case 'connected': return '已连接';
+      case 'disconnected': return '已断开';
+      case 'connecting': return '连接中';
+      case 'error': return '错误';
+      case 'unknown': return '未知';
+      default: return host.status;
+    }
+  };
   
   return (
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base">{host.name}</CardTitle>
-          <StatusBadge status={host.status as StatusType} />
+          <Badge variant={isConnected ? "default" : "secondary"}>
+            {getStatusText()}
+          </Badge>
         </div>
-        <CardDescription>{host.hostname}</CardDescription>
+        <CardDescription>{host.hostname}:{host.port}</CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="flex justify-between">

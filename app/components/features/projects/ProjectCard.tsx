@@ -1,15 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-
-export interface Project {
-  id: number;
-  name: string;
-  description: string;
-  color: string;
-  icon: string;
-  is_default: boolean;
-  groups: any[];
-}
+import type { Project } from "~/types/api";
 
 interface ProjectCardProps {
   project: Project;
@@ -38,9 +29,9 @@ export function ProjectCard({ project, onClick, className }: ProjectCardProps) {
       </CardHeader>
       <CardContent className="pt-0">
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>{project.groups.length} 个组</span>
+          <span>{project.groups?.length || 0} 个组</span>
           <span>
-            {project.groups.reduce((sum, g) => sum + g.hosts.length, 0)} 主机
+            {project.groups?.reduce((sum, g) => sum + (g.hosts?.length || 0), 0) || 0} 主机
           </span>
         </div>
       </CardContent>

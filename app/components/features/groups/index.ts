@@ -1,2 +1,2 @@
-export { GroupCard, type Group } from './GroupCard';
+export { GroupCard } from './GroupCard';
 export { GroupList } from './GroupList';

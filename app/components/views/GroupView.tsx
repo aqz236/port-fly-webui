@@ -1,8 +1,8 @@
 import { Button } from "~/components/ui/button";
-import { HostList, Host } from "~/components/features/hosts";
-import { PortForwardList, PortForward } from "~/components/features/ports";
-import { Group } from "~/components/features/groups";
+import { HostList } from "~/components/features/hosts";
+import { PortForwardList } from "~/components/features/ports";
 import { Plus } from "lucide-react";
+import type { Group, Host, PortForward } from "~/types/api";
 
 interface GroupViewProps {
   group: Group;
@@ -50,9 +50,9 @@ export function GroupView({
       
       {/* 主机列表 */}
       <div>
-        <h3 className="text-lg font-medium mb-4">主机 ({group.hosts.length})</h3>
+        <h3 className="text-lg font-medium mb-4">主机 ({group.hosts?.length || 0})</h3>
         <HostList 
-          hosts={group.hosts}
+          hosts={group.hosts || []}
           onEditHost={onEditHost}
           onToggleConnection={onToggleConnection}
         />
@@ -60,9 +60,9 @@ export function GroupView({
       
       {/* 端口转发列表 */}
       <div>
-        <h3 className="text-lg font-medium mb-4">端口转发 ({group.port_forwards.length})</h3>
+        <h3 className="text-lg font-medium mb-4">端口转发 ({group.port_forwards?.length || 0})</h3>
         <PortForwardList 
-          ports={group.port_forwards}
+          ports={group.port_forwards || []}
           onEditPort={onEditPort}
           onToggleStatus={onTogglePortStatus}
         />
