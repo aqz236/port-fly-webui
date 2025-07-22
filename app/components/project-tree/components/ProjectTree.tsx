@@ -10,6 +10,15 @@ import {
   UncontrolledTreeEnvironment,
   StaticTreeDataProvider,
 } from 'react-complex-tree';
+import { GripVertical, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '~/components/ui/dropdown-menu';
+import { EditProjectDialog, DeleteProjectDialog } from '~/components/dialogs';
 import type { Project, CreateProjectData, MoveProjectParams } from '~/types/api';
 import type { SelectedItem } from '../../layout/AppSidebar';
 import { useProjectTreeState } from '../hooks/useProjectTreeState';
@@ -17,6 +26,7 @@ import { useProjectTreeDragDrop } from '../hooks/useProjectTreeDragDrop';
 import { convertToRCTFormat, getNodeTitle, createTreeConfig } from '../utils/tree-utils';
 import { ProjectTreeActions } from '../components/ProjectTreeActions';
 import { getIconByName } from '../utils/icons';
+import type { EditProjectData } from '~/components/dialogs/edit-project-dialog';
 import 'react-complex-tree/lib/style-modern.css';
 
 export interface ProjectTreeProps {
@@ -31,6 +41,12 @@ export interface ProjectTreeProps {
   
   /** 创建项目回调 */
   onCreateProject?: (data: CreateProjectData) => Promise<void>;
+  
+  /** 编辑项目回调 */
+  onEditProject?: (projectId: number, data: EditProjectData) => Promise<void>;
+  
+  /** 删除项目回调 */
+  onDeleteProject?: (projectId: number) => Promise<void>;
   
   /** 移动项目回调 */
   onMoveProject?: (params: MoveProjectParams) => Promise<void>;
@@ -56,6 +72,8 @@ export function ProjectTree({
   selected,
   onSelect,
   onCreateProject,
+  onEditProject,
+  onDeleteProject,
   onMoveProject,
   initialExpanded = ['root'],
   enableDragAndDrop = true,
@@ -63,10 +81,67 @@ export function ProjectTree({
   treeId = 'project-tree',
   className,
 }: ProjectTreeProps) {
+  // 对话框状态管理
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [selectedProject, setSelectedProject] = React.useState<Project | null>(null);
+  
+  // 动态拖拽控制状态
+  const [isDragEnabled, setIsDragEnabled] = React.useState(false);
+
   // 处理项目选择
   const handleSelectProject = React.useCallback((projectId: number) => {
     onSelect({ type: 'project', projectId });
   }, [onSelect]);
+
+  // 处理编辑项目
+  const handleEditProject = React.useCallback((project: Project) => {
+    setSelectedProject(project);
+    setEditDialogOpen(true);
+  }, []);
+
+  // 处理删除项目
+  const handleDeleteProject = React.useCallback((project: Project) => {
+    setSelectedProject(project);
+    setDeleteDialogOpen(true);
+  }, []);
+
+  // 处理拖拽按钮鼠标按下事件
+  const handleDragStart = React.useCallback((e: React.MouseEvent) => {
+    e.stopPropagation(); // 阻止事件冒泡
+    setIsDragEnabled(true);
+  }, []);
+
+  // 处理全局鼠标松开事件
+  React.useEffect(() => {
+    const handleMouseUp = () => {
+      setIsDragEnabled(false);
+    };
+
+    if (isDragEnabled) {
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragEnabled]);
+
+  // 根据项目ID查找项目对象
+  const findProjectById = React.useCallback((projectId: number): Project | undefined => {
+    const findInProjects = (projectList: Project[]): Project | undefined => {
+      for (const project of projectList) {
+        if (project.id === projectId) {
+          return project;
+        }
+        if (project.children && project.children.length > 0) {
+          const found = findInProjects(project.children);
+          if (found) return found;
+        }
+      }
+      return undefined;
+    };
+    return findInProjects(projects);
+  }, [projects]);
 
   // 使用树状态管理 Hook
   const {
@@ -110,16 +185,16 @@ export function ProjectTree({
     return new StaticTreeDataProvider(treeData);
   }, [treeData]);
 
-  // 树配置
+  // 树配置 - 动态控制拖拽
   const treeConfig = React.useMemo(() => {
     return createTreeConfig({
-      enableDragAndDrop,
+      enableDragAndDrop: enableDragAndDrop && isDragEnabled, // 只有在拖拽按钮按下时才启用拖拽
       canDropOnFolder: true,
       canDropOnNonFolder: true,
       canReorderItems: true,
       enableSearch: false,
     });
-  }, [enableDragAndDrop]);
+  }, [enableDragAndDrop, isDragEnabled]);
 
   // 创建一个基于树数据的key，确保在乐观更新时重新渲染
   const treeKey = React.useMemo(() => {
@@ -155,21 +230,95 @@ export function ProjectTree({
         canDropOnNonFolder={treeConfig.canDropOnNonFolder}
         canSearch={treeConfig.enableSearch}
         renderItemTitle={({ title, item, context }) => {
-          // 自定义渲染项目标题，包含图标
+          // 自定义渲染项目标题，包含图标、拖拽区域和操作按钮
           const treeItem = treeData[item.index];
           const project = treeItem?.data?.project;
+          
+          // 如果是根节点，只显示标题
+          if (item.index === 'root') {
+            return <span>{title}</span>;
+          }
           
           if (project?.icon && project?.color) {
             const iconData = getIconByName(project.icon);
             if (iconData) {
               const IconComponent = iconData.component;
               return (
-                <div className="flex items-center gap-2">
-                  <IconComponent 
-                    size={16} 
-                    style={{ color: project.color }}
-                  />
-                  <span>{title}</span>
+                <div className="flex items-center justify-between w-full group">
+                  {/* 左侧：图标和标题 */}
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <IconComponent 
+                      size={16} 
+                      style={{ color: project.color }}
+                    />
+                    <span className="truncate">{title}</span>
+                  </div>
+                  
+                  {/* 右侧：拖拽区域和操作按钮 */}
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {/* 拖拽区域 */}
+                    {enableDragAndDrop && (
+                      <div 
+                        className="p-1 hover:bg-gray-200 rounded cursor-grab active:cursor-grabbing"
+                        onMouseDown={handleDragStart}
+                        title="拖拽排序"
+                      >
+                        <GripVertical size={14} className="text-gray-400" />
+                      </div>
+                    )}
+                    
+                    {/* 操作菜单 */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <div 
+                          className="p-1 hover:bg-gray-200 rounded cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                          onMouseUp={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                          onFocus={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                          tabIndex={-1}
+                          title="更多操作"
+                        >
+                          <MoreHorizontal size={14} className="text-gray-400" />
+                        </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditProject(project);
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <Edit size={14} />
+                          编辑项目
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteProject(project);
+                          }}
+                          className="flex items-center gap-2 text-red-600 focus:text-red-600"
+                        >
+                          <Trash2 size={14} />
+                          删除项目
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
               );
             }
@@ -184,6 +333,22 @@ export function ProjectTree({
           treeLabel="项目树"
         />
       </UncontrolledTreeEnvironment>
+
+      {/* 编辑项目对话框 */}
+      <EditProjectDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        project={selectedProject}
+        onEditProject={onEditProject}
+      />
+
+      {/* 删除项目对话框 */}
+      <DeleteProjectDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        project={selectedProject}
+        onDeleteProject={onDeleteProject}
+      />
     </div>
   );
 }

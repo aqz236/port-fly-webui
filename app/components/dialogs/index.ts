@@ -1,3 +1,3 @@
 export { CreateProjectDialog } from './create-project-dialog';
-export { CreateHostGroupDialog } from './create-host-group-dialog';
-export { CreatePortGroupDialog } from './create-port-group-dialog';
+export { EditProjectDialog } from './edit-project-dialog';
+export { DeleteProjectDialog } from './delete-project-dialog';
