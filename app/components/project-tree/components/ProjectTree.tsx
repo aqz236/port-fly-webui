@@ -16,6 +16,7 @@ import { useProjectTreeState } from '../hooks/useProjectTreeState';
 import { useProjectTreeDragDrop } from '../hooks/useProjectTreeDragDrop';
 import { convertToRCTFormat, getNodeTitle, createTreeConfig } from '../utils/tree-utils';
 import { ProjectTreeActions } from '../components/ProjectTreeActions';
+import { getIconByName } from '../utils/icons';
 import 'react-complex-tree/lib/style-modern.css';
 
 export interface ProjectTreeProps {
@@ -153,6 +154,29 @@ export function ProjectTree({
         canReorderItems={treeConfig.canReorderItems}
         canDropOnNonFolder={treeConfig.canDropOnNonFolder}
         canSearch={treeConfig.enableSearch}
+        renderItemTitle={({ title, item, context }) => {
+          // 自定义渲染项目标题，包含图标
+          const treeItem = treeData[item.index];
+          const project = treeItem?.data?.project;
+          
+          if (project?.icon && project?.color) {
+            const iconData = getIconByName(project.icon);
+            if (iconData) {
+              const IconComponent = iconData.component;
+              return (
+                <div className="flex items-center gap-2">
+                  <IconComponent 
+                    size={16} 
+                    style={{ color: project.color }}
+                  />
+                  <span>{title}</span>
+                </div>
+              );
+            }
+          }
+          
+          return <span>{title}</span>;
+        }}
       >
         <Tree
           treeId={treeId}

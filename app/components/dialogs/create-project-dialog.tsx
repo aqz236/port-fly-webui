@@ -13,7 +13,9 @@ import { Label } from "~/components/ui/label"
 import { Textarea } from "~/components/ui/textarea"
 import { Badge } from "~/components/ui/badge"
 import { Alert, AlertDescription } from "~/components/ui/alert"
-import { Folder, FolderOpen, Star, Database, Globe, Code, AlertCircle } from "lucide-react"
+import { AlertCircle, MoreHorizontal } from "lucide-react"
+import { IconPicker } from "../project-tree/components/IconPicker"
+import { getIconByName, getRandomIcon, getRandomColor, ICON_COLORS } from "../project-tree/utils/icons"
 import type { CreateProjectData } from "~/types/api"
 
 interface CreateProjectDialogProps {
@@ -22,40 +24,25 @@ interface CreateProjectDialogProps {
   onCreateProject?: (data: CreateProjectData) => Promise<void>
 }
 
-const defaultColors = [
-  "#6366f1", // indigo
-  "#8b5cf6", // violet  
-  "#06b6d4", // cyan
-  "#10b981", // emerald
-  "#f59e0b", // amber
-  "#ef4444", // red
-  "#ec4899", // pink
-  "#84cc16", // lime
-]
-
-const defaultIcons = [
-  { icon: Folder, name: "folder" },
-  { icon: FolderOpen, name: "folder-open" },
-  { icon: Star, name: "star" },
-  { icon: Database, name: "database" },
-  { icon: Globe, name: "globe" },
-  { icon: Code, name: "code" },
-]
-
 export function CreateProjectDialog({ 
   open, 
   onOpenChange, 
   onCreateProject 
 }: CreateProjectDialogProps) {
+  // 获取随机的默认图标和颜色
+  const defaultIcon = getRandomIcon();
+  const defaultColor = getRandomColor();
+  
   const [formData, setFormData] = useState<CreateProjectData>({
     name: "",
     description: "",
-    color: defaultColors[0],
-    icon: "folder",
+    color: defaultColor,
+    icon: defaultIcon.name,
     is_default: false,
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showIconPicker, setShowIconPicker] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,14 +78,17 @@ export function CreateProjectDialog({
 
   const handleClose = () => {
     onOpenChange(false)
+    const newDefaultIcon = getRandomIcon();
+    const newDefaultColor = getRandomColor();
     setFormData({
       name: "",
       description: "",
-      color: defaultColors[0],
-      icon: "folder",
+      color: newDefaultColor,
+      icon: newDefaultIcon.name,
       is_default: false,
     })
     setError(null)
+    setShowIconPicker(false)
   }
 
   const updateFormData = (field: keyof CreateProjectData, value: any) => {
@@ -106,7 +96,8 @@ export function CreateProjectDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>创建项目</DialogTitle>
@@ -158,17 +149,18 @@ export function CreateProjectDialog({
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">颜色</Label>
               <div className="col-span-3 flex gap-2 flex-wrap">
-                {defaultColors.map((color) => (
+                {ICON_COLORS.map((color: string) => (
                   <button
                     key={color}
                     type="button"
-                    className={`w-8 h-8 rounded-full border-2 ${
+                    className={`w-8 h-8 rounded-full border-2 transition-all ${
                       formData.color === color
-                        ? 'border-foreground'
-                        : 'border-transparent'
+                        ? 'border-gray-600 scale-110'
+                        : 'border-gray-200 hover:border-gray-400'
                     }`}
                     style={{ backgroundColor: color }}
                     onClick={() => updateFormData('color', color)}
+                    title={color}
                   />
                 ))}
               </div>
@@ -177,21 +169,35 @@ export function CreateProjectDialog({
             {/* 项目图标 */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">图标</Label>
-              <div className="col-span-3 flex gap-2 flex-wrap">
-                {defaultIcons.map(({ icon: Icon, name }) => (
-                  <button
-                    key={name}
-                    type="button"
-                    className={`w-10 h-10 rounded-md border-2 flex items-center justify-center ${
-                      formData.icon === name
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                    onClick={() => updateFormData('icon', name)}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </button>
-                ))}
+              <div className="col-span-3 flex items-center gap-2">
+                {/* 当前选中的图标预览 */}
+                <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
+                  {(() => {
+                    const selectedIconData = formData.icon ? getIconByName(formData.icon) : null;
+                    if (selectedIconData) {
+                      const IconComponent = selectedIconData.component;
+                      return (
+                        <IconComponent 
+                          size={20} 
+                          style={{ color: formData.color }}
+                        />
+                      );
+                    }
+                    return <div className="w-5 h-5 bg-gray-300 rounded" />;
+                  })()}
+                  <span className="text-sm text-gray-600">{formData.icon}</span>
+                </div>
+                
+                {/* 更多图标按钮 */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowIconPicker(true)}
+                >
+                  <MoreHorizontal className="h-4 w-4 mr-1" />
+                  更多图标
+                </Button>
               </div>
             </div>
 
@@ -223,5 +229,31 @@ export function CreateProjectDialog({
         </form>
       </DialogContent>
     </Dialog>
+
+    {/* 图标选择器对话框 */}
+    <Dialog open={showIconPicker} onOpenChange={setShowIconPicker}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>选择项目图标</DialogTitle>
+          <DialogDescription>
+            为您的项目选择一个图标
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4">
+          <IconPicker 
+            open={true}
+            onOpenChange={() => {}}
+            selectedIcon={formData.icon || ''}
+            selectedColor={formData.color || ICON_COLORS[0]}
+            onSelect={(iconName: string, color: string) => {
+              updateFormData('icon', iconName);
+              updateFormData('color', color);
+              setShowIconPicker(false);
+            }}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }

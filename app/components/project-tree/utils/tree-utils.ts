@@ -21,7 +21,11 @@ export function convertToRCTFormat(
       index: node.id,
       canMove: node.canMove,
       canRename: node.canRename,
-      data: node.name,
+      data: {
+        name: node.name,
+        project: node.project,
+        type: node.type,
+      },
       children: node.children,
       isFolder: node.isFolder,
     };
@@ -34,6 +38,9 @@ export function convertToRCTFormat(
  * 获取节点的显示标题
  */
 export function getNodeTitle(node: any): string {
+  if (typeof node.data === 'object' && node.data?.name) {
+    return node.data.name;
+  }
   return node.data || 'Untitled';
 }
 
