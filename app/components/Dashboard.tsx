@@ -161,6 +161,7 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
   };
 
   return (
+
     <SidebarProvider>
       <div className="flex h-screen w-full">
         <AppSidebar
@@ -180,5 +181,6 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
         </SidebarInset>
       </div>
     </SidebarProvider>
+
   );
 }
