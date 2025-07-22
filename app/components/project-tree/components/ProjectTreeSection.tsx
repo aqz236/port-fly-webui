@@ -6,10 +6,10 @@
 
 import React from 'react';
 import {
-  CustomSidebarGroup,
-  CustomSidebarGroupContent,
-  CustomSidebarGroupLabel,
-} from '../../layout/sidebar/CustomSidebar';
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+} from '~/components/ui/sidebar';
 import { ProjectTree } from './ProjectTree';
 import type { Project, CreateProjectData, MoveProjectParams } from '~/types/api';
 import type { SelectedItem } from '../../layout/AppSidebar';
@@ -30,8 +30,8 @@ export function ProjectTreeSection({
   onMoveProject,
 }: ProjectTreeSectionProps) {
   return (
-    <CustomSidebarGroup>
-      <CustomSidebarGroupContent>
+    <SidebarGroup>
+      <SidebarGroupContent>
         <ProjectTree
           projects={projects}
           selected={selected}
@@ -42,7 +42,7 @@ export function ProjectTreeSection({
           showActions={true}
           treeId="projects-tree"
         />
-      </CustomSidebarGroupContent>
-    </CustomSidebarGroup>
+      </SidebarGroupContent>
+    </SidebarGroup>
   );
 }

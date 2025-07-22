@@ -1,7 +1,7 @@
 import {
-  CustomSidebar,
-  CustomSidebarContent,
-} from "./sidebar/CustomSidebar";
+  Sidebar,
+  SidebarContent,
+} from "~/components/ui/sidebar";
 import type { CreateProjectData, MoveProjectParams, Project } from "~/types/api";
 import {
   SidebarHeader,
@@ -34,8 +34,8 @@ export function AppSidebar({
   onMoveProject 
 }: AppSidebarProps) {
   return (
-    <CustomSidebar>
-      <CustomSidebarContent>
+    <Sidebar>
+      <SidebarContent>
         <SidebarHeader />
         
         <SidebarOverview 
@@ -52,7 +52,7 @@ export function AppSidebar({
         />
         
         <SidebarFooter />
-      </CustomSidebarContent>
-    </CustomSidebar>
+      </SidebarContent>
+    </Sidebar>
   );
 }

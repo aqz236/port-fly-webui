@@ -1,11 +1,11 @@
 import { Home } from "lucide-react";
 import {
-  CustomSidebarGroup,
-  CustomSidebarGroupContent,
-  CustomSidebarMenu,
-  CustomSidebarMenuButton,
-  CustomSidebarMenuItem,
-} from "./CustomSidebar";
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "~/components/ui/sidebar";
 import type { SelectedItem } from "../AppSidebar";
 
 interface SidebarOverviewProps {
@@ -15,20 +15,20 @@ interface SidebarOverviewProps {
 
 export function SidebarOverview({ selected, onSelect }: SidebarOverviewProps) {
   return (
-    <CustomSidebarGroup>
-      <CustomSidebarGroupContent>
-        <CustomSidebarMenu>
-          <CustomSidebarMenuItem>
-            <CustomSidebarMenuButton
+    <SidebarGroup>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
               onClick={() => onSelect({ type: 'overview' })}
               isActive={selected.type === 'overview'}
             >
               <Home className="w-4 h-4" />
               <span>概览</span>
-            </CustomSidebarMenuButton>
-          </CustomSidebarMenuItem>
-        </CustomSidebarMenu>
-      </CustomSidebarGroupContent>
-    </CustomSidebarGroup>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   );
 }

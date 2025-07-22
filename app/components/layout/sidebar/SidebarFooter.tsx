@@ -1,31 +1,34 @@
 import { Activity, Settings } from "lucide-react";
 import {
-  CustomSidebarGroup,
-  CustomSidebarGroupContent,
-  CustomSidebarMenu,
-  CustomSidebarMenuButton,
-  CustomSidebarMenuItem,
-} from "./CustomSidebar";
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarFooter as ShadcnSidebarFooter,
+} from "~/components/ui/sidebar";
 
 export function SidebarFooter() {
   return (
-    <CustomSidebarGroup className="mt-auto border-t border-border">
-      <CustomSidebarGroupContent>
-        <CustomSidebarMenu>
-          <CustomSidebarMenuItem>
-            <CustomSidebarMenuButton>
-              <Activity className="w-4 h-4" />
-              <span>活跃会话</span>
-            </CustomSidebarMenuButton>
-          </CustomSidebarMenuItem>
-          <CustomSidebarMenuItem>
-            <CustomSidebarMenuButton>
-              <Settings className="w-4 h-4" />
-              <span>设置</span>
-            </CustomSidebarMenuButton>
-          </CustomSidebarMenuItem>
-        </CustomSidebarMenu>
-      </CustomSidebarGroupContent>
-    </CustomSidebarGroup>
+    <ShadcnSidebarFooter className="mt-auto border-t border-border">
+      <SidebarGroup>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <Activity className="w-4 h-4" />
+                <span>活跃会话</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <Settings className="w-4 h-4" />
+                <span>设置</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </ShadcnSidebarFooter>
   );
 }
