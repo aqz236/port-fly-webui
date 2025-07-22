@@ -3,6 +3,7 @@ import {
   SidebarContent,
 } from "~/components/ui/sidebar";
 import type { CreateProjectData, MoveProjectParams, Project } from "~/types/api";
+import type { EditProjectData } from "~/components/dialogs/edit-project-dialog";
 import {
   SidebarHeader,
   SidebarOverview,
@@ -23,6 +24,8 @@ interface AppSidebarProps {
   selected: SelectedItem;
   onSelect: (selected: SelectedItem) => void;
   onCreateProject?: (data: CreateProjectData) => Promise<void>;
+  onEditProject?: (projectId: number, data: EditProjectData) => Promise<void>;
+  onDeleteProject?: (projectId: number) => Promise<void>;
   onMoveProject?: (params: MoveProjectParams) => Promise<void>;
 }
 
@@ -30,7 +33,9 @@ export function AppSidebar({
   projects, 
   selected, 
   onSelect, 
-  onCreateProject, 
+  onCreateProject,
+  onEditProject,
+  onDeleteProject,
   onMoveProject 
 }: AppSidebarProps) {
   return (
@@ -48,6 +53,8 @@ export function AppSidebar({
           selected={selected}
           onSelect={onSelect}
           onCreateProject={onCreateProject}
+          onEditProject={onEditProject}
+          onDeleteProject={onDeleteProject}
           onMoveProject={onMoveProject}
         />
         

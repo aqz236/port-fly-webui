@@ -13,12 +13,15 @@ import {
 import { ProjectTree } from './ProjectTree';
 import type { Project, CreateProjectData, MoveProjectParams } from '~/types/api';
 import type { SelectedItem } from '../../layout/AppSidebar';
+import type { EditProjectData } from '~/components/dialogs/edit-project-dialog';
 
 interface ProjectTreeSectionProps {
   projects: Project[];
   selected: SelectedItem;
   onSelect: (selected: SelectedItem) => void;
   onCreateProject?: (data: CreateProjectData) => Promise<void>;
+  onEditProject?: (projectId: number, data: EditProjectData) => Promise<void>;
+  onDeleteProject?: (projectId: number) => Promise<void>;
   onMoveProject?: (params: MoveProjectParams) => Promise<void>;
 }
 
@@ -27,6 +30,8 @@ export function ProjectTreeSection({
   selected,
   onSelect,
   onCreateProject,
+  onEditProject,
+  onDeleteProject,
   onMoveProject,
 }: ProjectTreeSectionProps) {
   return (
@@ -37,6 +42,8 @@ export function ProjectTreeSection({
           selected={selected}
           onSelect={onSelect}
           onCreateProject={onCreateProject}
+          onEditProject={onEditProject}
+          onDeleteProject={onDeleteProject}
           onMoveProject={onMoveProject}
           enableDragAndDrop={true}
           showActions={true}

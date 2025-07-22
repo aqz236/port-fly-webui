@@ -11,13 +11,6 @@ import {
   StaticTreeDataProvider,
 } from 'react-complex-tree';
 import { GripVertical, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '~/components/ui/dropdown-menu';
 import { EditProjectDialog, DeleteProjectDialog } from '~/components/dialogs';
 import type { Project, CreateProjectData, MoveProjectParams } from '~/types/api';
 import type { SelectedItem } from '../../layout/AppSidebar';
@@ -89,6 +82,9 @@ export function ProjectTree({
   // 动态拖拽控制状态
   const [isDragEnabled, setIsDragEnabled] = React.useState(false);
 
+  // 操作菜单状态管理
+  const [dropdownOpen, setDropdownOpen] = React.useState<{[key: string]: boolean}>({});
+
   // 处理项目选择
   const handleSelectProject = React.useCallback((projectId: number) => {
     onSelect({ type: 'project', projectId });
@@ -98,12 +94,16 @@ export function ProjectTree({
   const handleEditProject = React.useCallback((project: Project) => {
     setSelectedProject(project);
     setEditDialogOpen(true);
+    // 关闭下拉菜单
+    setDropdownOpen({});
   }, []);
 
   // 处理删除项目
   const handleDeleteProject = React.useCallback((project: Project) => {
     setSelectedProject(project);
     setDeleteDialogOpen(true);
+    // 关闭下拉菜单
+    setDropdownOpen({});
   }, []);
 
   // 处理拖拽按钮鼠标按下事件
@@ -239,89 +239,113 @@ export function ProjectTree({
             return <span>{title}</span>;
           }
           
-          if (project?.icon && project?.color) {
-            const iconData = getIconByName(project.icon);
-            if (iconData) {
-              const IconComponent = iconData.component;
-              return (
-                <div className="flex items-center justify-between w-full group">
-                  {/* 左侧：图标和标题 */}
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
+          // 如果有项目数据，渲染完整的项目项
+          if (project) {
+            let IconComponent = null;
+            let iconColor = '#6B7280'; // 默认灰色
+            
+            // 尝试获取图标组件和颜色
+            if (project.icon && project.color) {
+              const iconData = getIconByName(project.icon);
+              if (iconData) {
+                IconComponent = iconData.component;
+                iconColor = project.color;
+              }
+            }
+            
+            return (
+              <div className="flex items-center justify-between w-full group">
+                {/* 左侧：图标和标题 */}
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  {IconComponent ? (
                     <IconComponent 
                       size={16} 
-                      style={{ color: project.color }}
+                      style={{ color: iconColor }}
                     />
-                    <span className="truncate">{title}</span>
-                  </div>
+                  ) : (
+                    <div 
+                      className="w-4 h-4 rounded"
+                      style={{ backgroundColor: iconColor }}
+                    />
+                  )}
+                  <span className="truncate">{title}</span>
+                </div>
+                
+                {/* 右侧：拖拽区域和操作按钮 */}
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {/* 拖拽区域 */}
+                  {enableDragAndDrop && (
+                    <div 
+                      className="p-1 hover:bg-gray-200 rounded cursor-grab active:cursor-grabbing"
+                      onMouseDown={handleDragStart}
+                      title="拖拽排序"
+                    >
+                      <GripVertical size={14} className="text-gray-400" />
+                    </div>
+                  )}
                   
-                  {/* 右侧：拖拽区域和操作按钮 */}
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {/* 拖拽区域 */}
-                    {enableDragAndDrop && (
-                      <div 
-                        className="p-1 hover:bg-gray-200 rounded cursor-grab active:cursor-grabbing"
-                        onMouseDown={handleDragStart}
-                        title="拖拽排序"
-                      >
-                        <GripVertical size={14} className="text-gray-400" />
-                      </div>
-                    )}
+                  {/* 操作菜单 */}
+                  <div className="relative">
+                    <div 
+                      className="p-1 hover:bg-gray-200 rounded cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const itemKey = `project-${project.id}`;
+                        setDropdownOpen(prev => ({
+                          ...prev,
+                          [itemKey]: !prev[itemKey]
+                        }));
+                      }}
+                      title="更多操作"
+                    >
+                      <MoreHorizontal size={14} className="text-gray-400" />
+                    </div>
                     
-                    {/* 操作菜单 */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                    {/* 自定义下拉菜单 */}
+                    {dropdownOpen[`project-${project.id}`] && (
+                      <>
+                        {/* 背景遮罩 */}
                         <div 
-                          className="p-1 hover:bg-gray-200 rounded cursor-pointer"
+                          className="fixed inset-0 z-40"
                           onClick={(e) => {
                             e.stopPropagation();
-                            e.preventDefault();
+                            setDropdownOpen({});
                           }}
-                          onMouseDown={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                          }}
-                          onMouseUp={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                          }}
-                          onFocus={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                          }}
-                          tabIndex={-1}
-                          title="更多操作"
-                        >
-                          <MoreHorizontal size={14} className="text-gray-400" />
+                        />
+                        
+                        {/* 菜单内容 */}
+                        <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-md shadow-lg border z-50">
+                          <div className="py-1">
+                            <div
+                              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditProject(project);
+                              }}
+                            >
+                              <Edit size={14} />
+                              编辑项目
+                            </div>
+                            <div className="border-t border-gray-100" />
+                            <div
+                              className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteProject(project);
+                              }}
+                            >
+                              <Trash2 size={14} />
+                              删除项目
+                            </div>
+                          </div>
                         </div>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditProject(project);
-                          }}
-                          className="flex items-center gap-2"
-                        >
-                          <Edit size={14} />
-                          编辑项目
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteProject(project);
-                          }}
-                          className="flex items-center gap-2 text-red-600 focus:text-red-600"
-                        >
-                          <Trash2 size={14} />
-                          删除项目
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      </>
+                    )}
                   </div>
                 </div>
-              );
-            }
+              </div>
+            );
           }
           
           return <span>{title}</span>;

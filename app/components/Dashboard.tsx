@@ -5,7 +5,8 @@ import { OverviewView, ProjectView, GroupView } from "~/components/views";
 import { ProjectCard } from "~/components/features/projects";
 import { GroupCard } from "~/components/features/groups";
 import { apiClient } from "~/lib/api/client";
-import type { CreateProjectData, MoveProjectParams, Project, Group, Host, PortForward } from "~/types/api";
+import type { CreateProjectData, UpdateProjectData, MoveProjectParams, Project, Group, Host, PortForward } from "~/types/api";
+import type { EditProjectData } from "~/components/dialogs/edit-project-dialog";
 
 interface DashboardProps {
   projects: Project[];
@@ -122,6 +123,53 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
     }
   };
 
+  // 编辑项目处理函数
+  const handleEditProject = async (projectId: number, data: EditProjectData) => {
+    try {
+      console.log('Editing project:', projectId, 'with data:', data);
+      // 将 EditProjectData 转换为 UpdateProjectData
+      const updateData: UpdateProjectData = {
+        name: data.name,
+        description: data.description,
+        color: data.color,
+        icon: data.icon,
+        is_default: data.is_default,
+      };
+      await apiClient.updateProject(projectId, updateData);
+      console.log('Project edited successfully');
+      
+      // 触发项目列表更新
+      if (onProjectsUpdate) {
+        onProjectsUpdate();
+      }
+    } catch (error) {
+      console.error('Failed to edit project:', error);
+      throw error;
+    }
+  };
+
+  // 删除项目处理函数
+  const handleDeleteProject = async (projectId: number) => {
+    try {
+      console.log('Deleting project:', projectId);
+      await apiClient.deleteProject(projectId);
+      console.log('Project deleted successfully');
+      
+      // 如果删除的是当前选中的项目，回到概览页面
+      if (selected.type === 'project' && selected.projectId === projectId) {
+        setSelected({ type: 'overview' });
+      }
+      
+      // 触发项目列表更新
+      if (onProjectsUpdate) {
+        onProjectsUpdate();
+      }
+    } catch (error) {
+      console.error('Failed to delete project:', error);
+      throw error;
+    }
+  };
+
   const renderMainContent = () => {
     switch (selected.type) {
       case 'project': {
@@ -169,6 +217,8 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
           selected={selected}
           onSelect={setSelected}
           onCreateProject={handleCreateProject}
+          onEditProject={handleEditProject}
+          onDeleteProject={handleDeleteProject}
           onMoveProject={handleMoveProject}
         />
         

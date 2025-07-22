@@ -19,7 +19,7 @@ import type { Project } from "~/types/api"
 
 export interface EditProjectData {
   name: string;
-  description: string;
+  description?: string;
   color: string;
   icon: string;
   is_default: boolean;
