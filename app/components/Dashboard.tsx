@@ -16,9 +16,10 @@ import type { EditProjectData } from "~/components/dialogs/edit-project-dialog";
 interface DashboardProps {
   projects: Project[];
   onProjectsUpdate?: () => void; // 添加项目更新回调
+  onGroupClick?: (group: Group) => void; // 添加组点击回调
 }
 
-export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
+export function Dashboard({ projects, onProjectsUpdate, onGroupClick }: DashboardProps) {
   const [selected, setSelected] = useState<SelectedItem>({ type: 'overview' });
 
   // 使用 mutation hooks
@@ -58,6 +59,14 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
   };
 
   const handleGroupSelect = (projectId: number, groupId: number) => {
+    const project = projects.find(p => p.id === projectId);
+    if (project && project.groups) {
+      const group = project.groups.find(g => g.id === groupId);
+      if (group && onGroupClick) {
+        onGroupClick(group);
+        return;
+      }
+    }
     setSelected({ type: 'group', projectId, groupId });
   };
 

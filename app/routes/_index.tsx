@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useQueryClient } from "@tanstack/react-query";
-import { Dashboard } from "~/components/Dashboard";
+import { MainLayout } from "~/components/layout/MainLayout";
 import { useProjects } from "~/lib/hooks/api";
 
 export const meta: MetaFunction = () => {
@@ -39,5 +39,5 @@ export default function Index() {
     );
   }
 
-  return <Dashboard projects={projects} onProjectsUpdate={handleProjectsUpdate} />;
+  return <MainLayout projects={projects} onProjectsUpdate={handleProjectsUpdate} />;
 }
