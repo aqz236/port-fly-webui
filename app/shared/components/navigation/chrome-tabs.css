@@ -1,0 +1,210 @@
+/* Chrome 风格标签页动画样式 */
+
+/* 标签页形状过渡动画 */
+.chrome-tab-shape {
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* 标签页顶部高亮线的滑入动画 */
+@keyframes slide-in-top {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+.chrome-tab-highlight {
+  animation: slide-in-top 0.3s ease-out;
+  transform-origin: center;
+}
+
+/* 标签页内容的淡入淡出动画 */
+.chrome-tab-content {
+  transition: opacity 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+/* 关闭按钮的缩放动画 */
+.chrome-tab-close {
+  transition: all 0.2s ease-in-out;
+}
+
+.chrome-tab-close:hover {
+  transform: scale(1.1);
+}
+
+/* 拖拽时的特殊效果 */
+.chrome-tab-dragging {
+  transform: rotate(3deg) scale(1.02);
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+}
+
+/* 标签页分隔线动画 */
+.chrome-tab-separator {
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* 新标签页按钮的脉冲动画 */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.chrome-new-tab-button:hover {
+  animation: pulse-subtle 1.5s ease-in-out infinite;
+}
+
+/* 标签页栏背景渐变动画 */
+.chrome-tab-bar {
+  background: linear-gradient(
+    180deg, 
+    rgba(248, 250, 252, 1) 0%, 
+    rgba(241, 245, 249, 1) 100%
+  );
+  transition: background 0.3s ease-in-out;
+}
+
+.dark .chrome-tab-bar {
+  background: linear-gradient(
+    180deg, 
+    rgba(30, 41, 59, 1) 0%, 
+    rgba(15, 23, 42, 1) 100%
+  );
+}
+
+/* 标签页宽度过渡动画 */
+.chrome-tab-width-transition {
+  transition: width 0.3s ease-out, min-width 0.3s ease-out, max-width 0.3s ease-out;
+}
+
+/* 响应式标签页宽度 */
+@media (max-width: 768px) {
+  .chrome-tab {
+    min-width: 120px;
+    max-width: 160px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .chrome-tab {
+    min-width: 140px;
+    max-width: 200px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .chrome-tab {
+    min-width: 160px;
+    max-width: 240px;
+  }
+}
+
+/* 标签页内容溢出处理 */
+.chrome-tab-title {
+  mask-image: linear-gradient(
+    to right, 
+    black 0%, 
+    black calc(100% - 20px), 
+    transparent 100%
+  );
+}
+
+/* 增强的滚动条样式 */
+.chrome-tab-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.chrome-tab-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.chrome-tab-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chrome-tab-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+.chrome-tab-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.7);
+}
+
+/* 标签页激活状态的额外样式 */
+.chrome-tab.active {
+  z-index: 10;
+}
+
+/* 标签页悬停状态增强 */
+.chrome-tab:hover:not(.active) {
+  z-index: 5;
+}
+
+/* 标签页标题渐变遮罩增强 */
+.chrome-tab-title {
+  -webkit-mask-image: linear-gradient(
+    to right, 
+    black 0%, 
+    black calc(100% - 20px), 
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right, 
+    black 0%, 
+    black calc(100% - 20px), 
+    transparent 100%
+  );
+}
+
+/* 标签页容器的重叠处理 */
+.chrome-tab {
+  margin-right: -8px;
+}
+
+.chrome-tab:last-child {
+  margin-right: 0;
+}
+
+/* 确保活动标签页在最上层 */
+.chrome-tab[data-active="true"] {
+  z-index: 20;
+}
+
+/* 侧边栏切换按钮区域样式 */
+.chrome-sidebar-trigger-area {
+  background: inherit;
+  border-right: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.chrome-sidebar-trigger-area .sidebar-trigger {
+  transition: all 0.2s ease-in-out;
+}
+
+.chrome-sidebar-trigger-area .sidebar-trigger:hover {
+  background-color: rgba(148, 163, 184, 0.1);
+  transform: scale(1.05);
+}
+
+/* 标签页栏高度优化 */
+.chrome-tab-bar {
+  min-height: 48px;
+}
+
+/* 分隔线样式优化 */
+.chrome-separator {
+  background: linear-gradient(
+    to bottom,
+    transparent 20%,
+    rgba(148, 163, 184, 0.3) 50%,
+    transparent 80%
+  );
+}

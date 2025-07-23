@@ -41,7 +41,7 @@ export function AppSidebar({
   return (
     <Sidebar>
       <SidebarContent>
-        <SidebarHeader />
+        {/* <SidebarHeader /> */}
         
         <SidebarOverview 
           selected={selected}

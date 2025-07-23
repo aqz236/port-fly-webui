@@ -23,8 +23,6 @@ import { X, FileText, Folder, Terminal, Home } from "lucide-react";
 import { useProjects } from "~/shared/api/hooks";
 import { useLayoutStore, TabItem } from "~/store/slices/layoutStore";
 import { cn } from "~/lib/utils";
-import { SidebarTrigger } from "~/shared/components/ui/sidebar";
-import { Separator } from "~/shared/components/ui/separator";
 
 interface ChromeTabProps {
   tab: TabItem;
@@ -33,7 +31,7 @@ interface ChromeTabProps {
   onTabClick: (id: string) => void;
 }
 
-interface DraggableTabBrowserProps {
+interface ChromeStyleTabBrowserProps {
   children: React.ReactNode;
 }
 
@@ -103,9 +101,9 @@ function ChromeTab({ tab, isActive, onTabClose, onTabClick }: ChromeTabProps) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        "relative group select-none chrome-tab-width-transition",
-        isDragging ? "opacity-60 z-50 chrome-tab-dragging" : isActive ? "z-10" : "z-0",
-        "transition-all duration-200"
+        "relative group select-none transition-all duration-200",
+        isDragging && "opacity-60 z-50 scale-105",
+        isActive ? "z-10" : "z-0"
       )}
       {...attributes}
       {...listeners}
@@ -113,16 +111,10 @@ function ChromeTab({ tab, isActive, onTabClose, onTabClick }: ChromeTabProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Chrome 风格的标签页背景 */}
-      <div className={cn(
-        "relative h-10 chrome-tab",
-        "w-48 max-w-48 min-w-24"
-      )}>
+      <div className="relative h-10 w-48 max-w-48 min-w-24">
         {/* SVG 背景 */}
         <svg
-          className={cn(
-            "absolute inset-0 w-full h-full chrome-tab-shape",
-            isDragging && "scale-105"
-          )}
+          className="absolute inset-0 w-full h-full"
           viewBox="0 0 192 40"
           preserveAspectRatio="none"
         >
@@ -156,9 +148,12 @@ function ChromeTab({ tab, isActive, onTabClose, onTabClick }: ChromeTabProps) {
                   ? `url(#hover-gradient-${tab.id})` 
                   : `url(#inactive-gradient-${tab.id})`
             }
-            stroke="transparent"
-            strokeWidth="0"
-            className="chrome-tab-shape"
+            stroke={isActive ? "rgb(229, 231, 235)" : "transparent"}
+            strokeWidth="1"
+            className={cn(
+              "transition-all duration-300 ease-out",
+              isActive && "drop-shadow-sm"
+            )}
           />
           
           {/* 活动状态的顶部高亮线 */}
@@ -171,7 +166,7 @@ function ChromeTab({ tab, isActive, onTabClose, onTabClick }: ChromeTabProps) {
               stroke={tab.color || "#3b82f6"}
               strokeWidth="3"
               strokeLinecap="round"
-              className="chrome-tab-highlight"
+              className="animate-in slide-in-from-left-4 duration-300"
             />
           )}
         </svg>
@@ -180,14 +175,14 @@ function ChromeTab({ tab, isActive, onTabClose, onTabClick }: ChromeTabProps) {
         <div
           className={cn(
             "absolute inset-0 flex items-center px-4 py-2 cursor-pointer",
-            "chrome-tab-content",
+            "transition-all duration-200",
             isDragging && "cursor-grabbing"
           )}
           onClick={() => onTabClick(tab.id)}
         >
           {/* 图标 */}
           <div className={cn(
-            "flex-shrink-0 chrome-tab-content",
+            "flex-shrink-0 transition-all duration-200",
             isActive ? "text-slate-700" : "text-slate-500",
             isHovered && !isActive && "text-slate-600"
           )}>
@@ -197,7 +192,7 @@ function ChromeTab({ tab, isActive, onTabClose, onTabClick }: ChromeTabProps) {
           {/* 标题 */}
           <span className={cn(
             "ml-2 mr-1 text-sm font-medium truncate flex-1 min-w-0",
-            "chrome-tab-content chrome-tab-title",
+            "transition-all duration-200",
             isActive ? "text-slate-800" : "text-slate-600",
             isHovered && !isActive && "text-slate-700"
           )}>
@@ -209,7 +204,7 @@ function ChromeTab({ tab, isActive, onTabClose, onTabClick }: ChromeTabProps) {
             <button
               className={cn(
                 "flex-shrink-0 h-6 w-6 p-0 ml-1 rounded-full",
-                "chrome-tab-close flex items-center justify-center",
+                "transition-all duration-200 flex items-center justify-center",
                 "opacity-0 group-hover:opacity-100",
                 "hover:bg-slate-200 dark:hover:bg-slate-600",
                 "text-slate-500 hover:text-slate-700",
@@ -226,16 +221,17 @@ function ChromeTab({ tab, isActive, onTabClose, onTabClick }: ChromeTabProps) {
             </button>
           )}
         </div>
+
+        {/* 标签页分隔线 */}
+        {!isActive && (
+          <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-300 dark:bg-slate-600 opacity-60" />
+        )}
       </div>
     </div>
   );
 }
 
-interface DraggableTabBrowserProps {
-  children: React.ReactNode;
-}
-
-export function DraggableTabBrowser({ children }: DraggableTabBrowserProps) {
+export function ChromeStyleTabBrowser({ children }: ChromeStyleTabBrowserProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -395,57 +391,48 @@ export function DraggableTabBrowser({ children }: DraggableTabBrowserProps) {
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
       {/* Chrome 风格标签页栏 */}
-      <div className="relative chrome-tab-bar border-b border-slate-200 dark:border-slate-700">
-        <div className="flex items-center h-12">
-          {/* 侧边栏切换按钮 */}
-          <div className="flex items-center px-3">
-            <SidebarTrigger className="h-8 w-8" />
-            <Separator orientation="vertical" className="ml-3 h-6" />
-          </div>
-          
-          {/* 标签页滚动区域 */}
-          <div className="flex-1 overflow-x-auto chrome-tab-scrollbar">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+      <div className="relative bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+        <div className="relative overflow-x-auto scrollbar-hide">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext 
+              items={sortedTabs.map(tab => tab.id)} 
+              strategy={horizontalListSortingStrategy}
             >
-              <SortableContext 
-                items={sortedTabs.map(tab => tab.id)} 
-                strategy={horizontalListSortingStrategy}
-              >
-                <div className="flex items-end min-w-max pl-2 pr-2 pt-2">
-                  {sortedTabs.map((tab) => (
-                    <ChromeTab
-                      key={tab.id}
-                      tab={tab}
-                      isActive={activeTab === tab.id}
-                      onTabClose={handleTabClose}
-                      onTabClick={handleTabClick}
-                    />
-                  ))}
-                  
-                  {/* 新标签页按钮 */}
-                  <div className="flex items-center justify-center h-10 w-10 ml-2 mb-0">
-                    <button
-                      className={cn(
-                        "h-8 w-8 rounded-full flex items-center justify-center",
-                        "text-slate-500 hover:text-slate-700 hover:bg-slate-200",
-                        "dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-600",
-                        "chrome-new-tab-button transition-all duration-200"
-                      )}
-                      onClick={() => navigate('/app')}
-                      title="新建标签页"
-                    >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                    </button>
-                  </div>
+              <div className="flex items-end min-w-max px-2 pt-2">
+                {sortedTabs.map((tab) => (
+                  <ChromeTab
+                    key={tab.id}
+                    tab={tab}
+                    isActive={activeTab === tab.id}
+                    onTabClose={handleTabClose}
+                    onTabClick={handleTabClick}
+                  />
+                ))}
+                
+                {/* 新标签页按钮 */}
+                <div className="flex items-center justify-center h-10 w-10 ml-2 mb-0">
+                  <button
+                    className={cn(
+                      "h-8 w-8 rounded-full flex items-center justify-center",
+                      "text-slate-500 hover:text-slate-700 hover:bg-slate-200",
+                      "dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-600",
+                      "transition-all duration-200"
+                    )}
+                    onClick={() => navigate('/app')}
+                    title="新建标签页"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
                 </div>
-              </SortableContext>
-            </DndContext>
-          </div>
+              </div>
+            </SortableContext>
+          </DndContext>
         </div>
       </div>
       

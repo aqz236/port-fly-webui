@@ -21,7 +21,7 @@ export function DashboardPage({ projects, onProjectClick }: DashboardPageProps) 
       gSum + (g.port_forwards?.filter((pf: any) => pf.status === 'active')?.length || 0), 0) || 0), 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">概览</h2>
         <p className="text-muted-foreground">管理你的SSH隧道和端口转发</p>
