@@ -20,7 +20,7 @@ import {
   Grid3X3
 } from "lucide-react";
 
-import { ProjectCanvas } from "./canvas/ProjectCanvas";
+import { ProjectCanvas } from "./canvas";
 import { GroupDialog } from "./dialogs/GroupDialog";
 import { HostDialog } from "./dialogs/HostDialog";
 import { PortForwardDialog } from "./dialogs/PortForwardDialog";
@@ -415,6 +415,17 @@ export function ProjectDetail({ project, stats, onGroupClick }: ProjectDetailPro
             <div className="h-[600px] border-t">
               <ProjectCanvas
                 project={projectWithData}
+                onCreateGroup={() => openDialog('group', 'create', {}, project.id)}
+                onEditGroup={(group: Group) => openDialog('group', 'edit', group, group.id)}
+                onDeleteGroup={handleDeleteNode.bind(null, 'group')}
+                onCreateHost={(groupId: number) => openDialog('host', 'create', {}, groupId)}
+                onEditHost={(host: Host) => openDialog('host', 'edit', host, host.group_id, host.id)}
+                onDeleteHost={handleDeleteNode.bind(null, 'host')}
+                onConnectHost={handleConnectHost}
+                onCreatePort={(groupId: number, hostId?: number) => openDialog('port', 'create', {}, groupId, hostId)}
+                onEditPort={(port: PortForward) => openDialog('port', 'edit', port, port.group_id, port.host_id)}
+                onDeletePort={handleDeleteNode.bind(null, 'port')}
+                onTogglePort={handleStartPortForward}
               />
             </div>
           )}

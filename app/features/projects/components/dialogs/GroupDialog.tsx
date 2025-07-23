@@ -1,6 +1,6 @@
 // Group CRUD Dialog 组件
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/shared/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "~/shared/components/ui/dialog";
 import { Button } from "~/shared/components/ui/button";
 import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
@@ -83,6 +83,9 @@ export function GroupDialog({
           <DialogTitle>
             {group ? '编辑组' : '创建新组'}
           </DialogTitle>
+          <DialogDescription>
+            {group ? '修改组的基本信息和配置' : '创建一个新的资源组来管理主机和端口转发'}
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">

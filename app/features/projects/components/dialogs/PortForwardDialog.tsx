@@ -1,6 +1,6 @@
 // Port Forward CRUD Dialog 组件
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "~/shared/components/ui/dialog";
 import { Button } from "~/shared/components/ui/button";
 import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
@@ -114,6 +114,9 @@ export function PortForwardDialog({
           <DialogTitle>
             {portForward ? '编辑端口转发' : '添加端口转发'}
           </DialogTitle>
+          <DialogDescription>
+            {portForward ? '修改端口转发规则和配置' : '创建新的端口转发规则'}
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">

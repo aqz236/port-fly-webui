@@ -1,6 +1,6 @@
 // Host CRUD Dialog 组件
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "~/shared/components/ui/dialog";
 import { Button } from "~/shared/components/ui/button";
 import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
@@ -83,6 +83,9 @@ export function HostDialog({
           <DialogTitle>
             {host ? '编辑主机' : '添加新主机'}
           </DialogTitle>
+          <DialogDescription>
+            {host ? '修改主机的连接信息和配置' : '添加一台新的主机到当前组中'}
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">
