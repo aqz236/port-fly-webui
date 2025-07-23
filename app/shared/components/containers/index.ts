@@ -1,1 +1,2 @@
-export { AppLayoutContainer } from './layout/AppLayoutContainer';
+// 容器组件导出
+// 注：容器组件已重构为基于Remix路由的标签页系统

@@ -1,31 +1,17 @@
 import { SidebarTrigger } from "~/shared/components/ui/sidebar";
 import { Separator } from "~/shared/components/ui/separator";
 import { Button } from "~/shared/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/shared/components/ui/tabs";
-import { Search, Bell, User, X } from "lucide-react";
-import type { Tab } from "~/store/slices/layoutStore";
+import { Search, Bell, User } from "lucide-react";
 
 interface AppHeaderProps {
   title: string;
-  tabs?: Tab[];
-  activeTab?: string;
-  onTabChange?: (tabId: string) => void;
-  onTabClose?: (tabId: string) => void;
   children?: React.ReactNode;
 }
 
 export function AppHeader({ 
   title, 
-  tabs = [], 
-  activeTab, 
-  onTabChange, 
-  onTabClose,
   children
 }: AppHeaderProps) {
-  // 获取标签页的颜色
-  const getTabColor = (tab: Tab): string => {
-    return tab.color || '#64748b';
-  };
   return (
     <div className="flex flex-col border-b">
       {/* 顶部工具栏 */}
@@ -46,45 +32,7 @@ export function AppHeader({
         </div>
       </header>
       
-      {/* 标签页区域 */}
-      {tabs.length > 0 && (
-        <div className="px-4">
-          <Tabs value={activeTab} onValueChange={onTabChange}>
-            <TabsList className="h-10 p-0 bg-transparent">
-              {tabs.map((tab) => (
-                <div key={tab.id} className="relative flex items-center">
-                  <TabsTrigger 
-                    value={tab.id}
-                    className="data-[state=active]:bg-background data-[state=active]:shadow-sm border-b-2 border-transparent data-[state=active]:border-primary rounded-none px-4 py-2"
-                  >
-                    <span className="flex items-center gap-2">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: getTabColor(tab) }}
-                      />
-                      {tab.title}
-                    </span>
-                  </TabsTrigger>
-                  {onTabClose && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0 ml-1 hover:bg-destructive hover:text-destructive-foreground"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onTabClose(tab.id);
-                      }}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </TabsList>
-            {children}
-          </Tabs>
-        </div>
-      )}
+      {children}
     </div>
   );
 }

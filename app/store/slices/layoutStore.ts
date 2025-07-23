@@ -10,31 +10,11 @@ export interface SelectedItem {
   groupId?: number
 }
 
-// 标签页类型
-export interface Tab {
-  id: string
-  type: 'project' | 'group' | 'terminal'
-  projectId: number
-  groupId?: number
-  hostId?: number
-  title: string
-  color?: string
-}
-
 // 布局状态接口
 interface LayoutState {
   // 选中状态
   selected: SelectedItem
   setSelected: (selected: SelectedItem) => void
-
-  // 标签页管理
-  tabs: Tab[]
-  activeTab: string | null
-  openProjectTab: (project: Project) => void
-  openGroupTab: (group: Group) => void
-  openTerminalTab: (host: any, projectId: number) => void
-  closeTab: (tabId: string) => void
-  setActiveTab: (tabId: string) => void
   
   // 数据查找助手
   projects: Project[]
@@ -47,7 +27,6 @@ interface LayoutState {
   getProjectStats: (projectId: number) => ProjectStats
   
   // 清理和重置
-  clearTabs: () => void
   reset: () => void
 }
 
@@ -77,8 +56,6 @@ export const useLayoutStore = create<LayoutState>()(
     (set, get) => ({
       // 初始状态
       selected: { type: 'overview' },
-      tabs: [],
-      activeTab: null,
       projects: [],
 
       // 选中状态管理
@@ -107,129 +84,6 @@ export const useLayoutStore = create<LayoutState>()(
         return undefined
       },
 
-      // 标签页管理
-      openProjectTab: (project) => {
-        const { tabs, setActiveTab } = get()
-        const tabId = `project-${project.id}`
-        
-        // 检查标签页是否已存在
-        const existingTab = tabs.find(tab => tab.id === tabId)
-        if (existingTab) {
-          setActiveTab(tabId)
-          return
-        }
-
-        // 创建新标签页
-        const newTab: Tab = {
-          id: tabId,
-          type: 'project',
-          projectId: project.id,
-          title: project.name,
-          color: project.color
-        }
-
-        set(
-          state => ({
-            tabs: [...state.tabs, newTab],
-            activeTab: tabId
-          }),
-          false,
-          'openProjectTab'
-        )
-      },
-
-      openGroupTab: (group) => {
-        const { tabs, setActiveTab } = get()
-        const tabId = `group-${group.id}`
-        
-        // 检查标签页是否已存在
-        const existingTab = tabs.find(tab => tab.id === tabId)
-        if (existingTab) {
-          setActiveTab(tabId)
-          return
-        }
-
-        // 创建新标签页
-        const newTab: Tab = {
-          id: tabId,
-          type: 'group',
-          projectId: group.project_id,
-          groupId: group.id,
-          title: group.name,
-          color: group.color
-        }
-
-        set(
-          state => ({
-            tabs: [...state.tabs, newTab],
-            activeTab: tabId
-          }),
-          false,
-          'openGroupTab'
-        )
-      },
-
-      openTerminalTab: (host, projectId) => {
-        const { tabs, setActiveTab } = get()
-        const tabId = `terminal-${host.id}`
-        
-        // 检查标签页是否已存在
-        const existingTab = tabs.find(tab => tab.id === tabId)
-        if (existingTab) {
-          setActiveTab(tabId)
-          return
-        }
-
-        // 创建新标签页
-        const newTab: Tab = {
-          id: tabId,
-          type: 'terminal',
-          projectId: projectId,
-          hostId: host.id,
-          title: `终端 - ${host.name}`,
-          color: '#10b981' // 绿色表示终端
-        }
-
-        set(
-          state => ({
-            tabs: [...state.tabs, newTab],
-            activeTab: tabId
-          }),
-          false,
-          'openTerminalTab'
-        )
-      },
-
-      closeTab: (tabId) => {
-        const { tabs, activeTab } = get()
-        const newTabs = tabs.filter(tab => tab.id !== tabId)
-        
-        let newActiveTab = activeTab
-        if (activeTab === tabId) {
-          // 如果关闭的是当前活动标签页，切换到下一个或上一个
-          const currentIndex = tabs.findIndex(tab => tab.id === tabId)
-          if (newTabs.length > 0) {
-            if (currentIndex > 0) {
-              newActiveTab = newTabs[currentIndex - 1].id
-            } else {
-              newActiveTab = newTabs[0].id
-            }
-          } else {
-            newActiveTab = null
-          }
-        }
-
-        set(
-          { tabs: newTabs, activeTab: newActiveTab },
-          false,
-          'closeTab'
-        )
-      },
-
-      setActiveTab: (tabId) => {
-        set({ activeTab: tabId }, false, 'setActiveTab')
-      },
-
       // 统计数据生成
       getGroupStats: (groupId: number) => {
         return generateGroupStats(groupId)
@@ -241,15 +95,9 @@ export const useLayoutStore = create<LayoutState>()(
       },
 
       // 清理和重置
-      clearTabs: () => {
-        set({ tabs: [], activeTab: null }, false, 'clearTabs')
-      },
-
       reset: () => {
         set({
           selected: { type: 'overview' },
-          tabs: [],
-          activeTab: null,
           projects: []
         }, false, 'reset')
       }
