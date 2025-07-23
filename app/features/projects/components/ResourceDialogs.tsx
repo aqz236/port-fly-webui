@@ -31,14 +31,16 @@ export function ResourceDialogs({
   hostLoading,
   portLoading
 }: ResourceDialogsProps) {
+  
   return (
     <>
+      
       {dialogState.type === 'group' && (
         <GroupDialog
           open={true}
           onOpenChange={onCloseDialog}
+          projectId={dialogState.projectId!}
           group={dialogState.mode === 'edit' ? dialogState.data : undefined}
-          projectId={dialogState.groupId!}
           onSave={onSaveGroup}
           loading={groupLoading}
         />

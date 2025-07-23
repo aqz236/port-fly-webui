@@ -14,42 +14,34 @@ import { Textarea } from "~/shared/components/ui/textarea"
 import { Badge } from "~/shared/components/ui/badge"
 import { Alert, AlertDescription } from "~/shared/components/ui/alert"
 import { AlertCircle, MoreHorizontal, X, Plus } from "lucide-react"
-import { IconPicker } from "../project-tree/components/IconPicker"
-import { getIconByName, getRandomIcon, getRandomColor, ICON_COLORS } from "../project-tree/utils/icons"
-import { CreateGroupData, UpdateGroupData, Group } from "~/shared/types/group"
+import { IconPicker } from "../../projects/components/project-tree/components/IconPicker"
+import { getIconByName, getRandomIcon, getRandomColor, ICON_COLORS } from "../../projects/components/project-tree/utils/icons"
+import { CreateGroupData } from "~/shared/types/group"
 
-interface GroupDialogProps {
+interface CreateGroupDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   projectId: number
-  group?: Group // 如果提供了 group，则为编辑模式
-  onSave?: (data: CreateGroupData | UpdateGroupData) => Promise<void>
-  loading?: boolean
+  onCreateGroup?: (data: CreateGroupData) => Promise<void>
 }
 
-export function GroupDialog({ 
+export function CreateGroupDialog({ 
   open, 
   onOpenChange, 
   projectId,
-  group,
-  onSave,
-  loading = false
-}: GroupDialogProps) {
-  const isEditMode = !!group;
-  
-
-  
-  // 获取随机的默认图标和颜色（仅用于创建模式）
+  onCreateGroup 
+}: CreateGroupDialogProps) {
+  // 获取随机的默认图标和颜色
   const defaultIcon = getRandomIcon();
   const defaultColor = getRandomColor();
   
-  const [formData, setFormData] = useState<CreateGroupData | UpdateGroupData>({
-    name: group?.name || "",
-    description: group?.description || "",
-    color: group?.color || defaultColor,
-    icon: group?.icon || defaultIcon.name,
+  const [formData, setFormData] = useState<CreateGroupData>({
+    name: "",
+    description: "",
+    color: defaultColor,
+    icon: defaultIcon.name,
     project_id: projectId,
-    tags: group?.tags || [],
+    tags: [],
   })
   const [tagInput, setTagInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -59,8 +51,10 @@ export function GroupDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log('Form submitted with data:', formData)
+    console.log('onCreateGroup function exists:', !!onCreateGroup)
     
-    if (!formData.name?.trim()) {
+    if (!formData.name.trim()) {
       setError('组名称不能为空')
       return
     }
@@ -69,14 +63,18 @@ export function GroupDialog({
     setIsLoading(true)
     
     try {
-      if (onSave) {
-        await onSave(formData)
+      if (onCreateGroup) {
+        console.log('Calling onCreateGroup with data:', formData)
+        await onCreateGroup(formData)
+        console.log('Group created successfully')
         handleClose()
       } else {
-        setError('保存组功能未正确配置')
+        console.warn('onCreateGroup function not provided')
+        setError('创建组功能未正确配置')
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : (isEditMode ? '更新组失败' : '创建组失败'))
+      console.error('Failed to create group:', error)
+      setError(error instanceof Error ? error.message : '创建组失败')
     } finally {
       setIsLoading(false)
     }
@@ -84,25 +82,22 @@ export function GroupDialog({
 
   const handleClose = () => {
     onOpenChange(false)
-    if (!isEditMode) {
-      // 只在创建模式下重置表单
-      const newDefaultIcon = getRandomIcon();
-      const newDefaultColor = getRandomColor();
-      setFormData({
-        name: "",
-        description: "",
-        color: newDefaultColor,
-        icon: newDefaultIcon.name,
-        project_id: projectId,
-        tags: [],
-      })
-    }
+    const newDefaultIcon = getRandomIcon();
+    const newDefaultColor = getRandomColor();
+    setFormData({
+      name: "",
+      description: "",
+      color: newDefaultColor,
+      icon: newDefaultIcon.name,
+      project_id: projectId,
+      tags: [],
+    })
     setTagInput("")
     setError(null)
     setShowIconPicker(false)
   }
 
-  const updateFormData = (field: keyof (CreateGroupData | UpdateGroupData), value: any) => {
+  const updateFormData = (field: keyof CreateGroupData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -135,9 +130,9 @@ export function GroupDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditMode ? '编辑组' : '创建组'}</DialogTitle>
+          <DialogTitle>创建组</DialogTitle>
           <DialogDescription>
-            {isEditMode ? '修改组的信息' : '创建一个新的组来组织主机和端口转发资源'}
+            创建一个新的组来组织主机和端口转发资源
           </DialogDescription>
         </DialogHeader>
         
@@ -285,8 +280,8 @@ export function GroupDialog({
             <Button type="button" variant="outline" onClick={handleClose}>
               取消
             </Button>
-            <Button type="submit" disabled={!formData.name?.trim() || isLoading || loading}>
-              {isLoading || loading ? (isEditMode ? "保存中..." : "创建中...") : (isEditMode ? "保存" : "创建组")}
+            <Button type="submit" disabled={!formData.name.trim() || isLoading}>
+              {isLoading ? "创建中..." : "创建组"}
             </Button>
           </DialogFooter>
         </form>

@@ -54,10 +54,12 @@ export function ProjectDetail({ project, stats, onGroupClick }: ProjectDetailPro
     openEditPortDialog,
   } = useResourceDialog();
 
+
+
   // Resource event handlers
-  const handleCreateGroupClick = useCallback(() => {
-    openCreateGroupDialog(project.id);
-  }, [project.id, openCreateGroupDialog]);
+  const handleCreateGroupClick = useCallback((projectId: number) => {
+    openCreateGroupDialog(projectId);
+  }, [openCreateGroupDialog]);
 
   const handleDeleteNode = useCallback(async (nodeType: string, nodeId: number) => {
     if (!confirm(`确定要删除这个${nodeType === 'group' ? '组' : nodeType === 'host' ? '主机' : '端口转发'}吗？`)) {
@@ -149,7 +151,7 @@ export function ProjectDetail({ project, stats, onGroupClick }: ProjectDetailPro
       {/* <ProjectDataView project={projectWithData} /> */}
 
       {/* 资源对话框 */}
-      {/* <ResourceDialogs
+      <ResourceDialogs
         dialogState={dialogState}
         hosts={hosts}
         onCloseDialog={closeDialog}
@@ -159,7 +161,7 @@ export function ProjectDetail({ project, stats, onGroupClick }: ProjectDetailPro
         groupLoading={groupLoading}
         hostLoading={hostLoading}
         portLoading={portLoading}
-      /> */}
+      />
     </div>
   );
 }

@@ -21,7 +21,9 @@ export function CanvasEmptyState({ projectName, onCreateGroup }: CanvasEmptyStat
           组可以帮助您按环境、服务或任何逻辑方式管理资源。
         </p>
         
-        <Button onClick={onCreateGroup} className="mb-4">
+        <Button onClick={() => {
+          onCreateGroup();
+        }} className="mb-4">
           <Plus className="h-4 w-4 mr-2" />
           创建第一个组
         </Button>

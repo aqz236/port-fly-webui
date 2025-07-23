@@ -16,7 +16,7 @@ type ViewMode = 'canvas' | 'list' | 'grid';
 interface ResourceViewerProps {
   project: Project;
   stats?: ProjectStats;
-  onCreateGroup: () => void;
+  onCreateGroup: (projectId: number) => void;
   onEditGroup: (group: Group) => void;
   onDeleteGroup: (id: number) => void;
   onCreateHost: (groupId: number) => void;
@@ -111,7 +111,7 @@ export function ResourceViewer({
             </div>
             
             {/* 快速创建按钮 */}
-            <Button onClick={onCreateGroup} size="sm">
+            <Button onClick={() => onCreateGroup(project.id)} size="sm">
               <Plus className="h-4 w-4 mr-2" />
               创建组
             </Button>
