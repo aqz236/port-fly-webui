@@ -1,6 +1,6 @@
 import { TabsContent } from "~/shared/components/ui/tabs"
 import { GroupDetail } from "~/features/groups/components/GroupDetail"
-import { ProjectDetailV2 } from "~/features/projects/components/ProjectDetail.v2"
+import { ProjectDetail } from "~/features/projects/components/ProjectDetail"
 import { useLayoutStore } from "~/store/slices/layoutStore"
 import type { Tab } from "~/store/slices/layoutStore"
 
@@ -44,7 +44,7 @@ export function TabContentRenderer({
             (() => {
               const project = getProjectById(tab.projectId)
               return project ? (
-                <ProjectDetailV2 
+                <ProjectDetail 
                   project={project}
                   stats={getProjectStats(tab.projectId)}
                   onGroupClick={onGroupClick}

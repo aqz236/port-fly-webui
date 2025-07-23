@@ -1,4 +1,4 @@
-import { ProjectDetailV2 } from "~/features/projects/components/ProjectDetail.v2";
+import { ProjectDetail } from "~/features/projects/components/ProjectDetail";
 import { Project } from "~/shared/types/project";
 
 interface ProjectsPageProps {
@@ -13,7 +13,7 @@ export function ProjectsPage({ project }: ProjectsPageProps) {
         <p className="text-muted-foreground">{project.description}</p>
       </div>
       
-      <ProjectDetailV2 project={project} />
+      <ProjectDetail project={project} />
     </div>
   );
 }
