@@ -1,8 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Dashboard } from "~/components/Dashboard";
-import { apiClient } from "~/lib/api/client";
-import type { Project } from "~/types/api";
+import { useProjects } from "~/lib/hooks/api";
 
 export const meta: MetaFunction = () => {
   return [
@@ -14,12 +13,8 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const queryClient = useQueryClient();
   
-  // 使用TanStack Query获取项目数据
-  const { data: projects = [], isLoading, error } = useQuery({
-    queryKey: ['projects'],
-    queryFn: () => apiClient.getProjects(), // 移除参数，使用默认的GetProjects方法
-    select: (data) => data as Project[] // 确保返回Project[]类型
-  });
+  // 使用封装好的 hook 获取项目数据
+  const { data: projects = [], isLoading, error } = useProjects();
 
   // 项目更新回调函数
   const handleProjectsUpdate = () => {

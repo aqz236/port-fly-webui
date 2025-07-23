@@ -4,7 +4,12 @@ import { AppSidebar, AppHeader, ViewType, SelectedItem } from "~/components/layo
 import { OverviewView, ProjectView, GroupView } from "~/components/views";
 import { ProjectCard } from "~/components/features/projects";
 import { GroupCard } from "~/components/features/groups";
-import { apiClient } from "~/lib/api/client";
+import { 
+  useCreateProject, 
+  useUpdateProject, 
+  useDeleteProject, 
+  useMoveProject 
+} from "~/lib/hooks/api";
 import type { CreateProjectData, UpdateProjectData, MoveProjectParams, Project, Group, Host, PortForward } from "~/types/api";
 import type { EditProjectData } from "~/components/dialogs/edit-project-dialog";
 
@@ -15,6 +20,12 @@ interface DashboardProps {
 
 export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
   const [selected, setSelected] = useState<SelectedItem>({ type: 'overview' });
+
+  // 使用 mutation hooks
+  const createProjectMutation = useCreateProject();
+  const updateProjectMutation = useUpdateProject();
+  const deleteProjectMutation = useDeleteProject();
+  const moveProjectMutation = useMoveProject();
 
   const getSelectedProject = (): Project | null => {
     if (selected.projectId) {
@@ -90,7 +101,7 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
   const handleCreateProject = async (data: CreateProjectData) => {
     try {
       console.log('Creating project with data:', data);
-      const newProject = await apiClient.createProject(data);
+      const newProject = await createProjectMutation.mutateAsync(data);
       console.log('Project created successfully:', newProject);
       
       // 触发项目列表更新
@@ -110,7 +121,7 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
   const handleMoveProject = async (params: MoveProjectParams) => {
     try {
       console.log('Moving project with params:', params);
-      await apiClient.moveProject(params);
+      await moveProjectMutation.mutateAsync(params);
       console.log('Project moved successfully');
       
       // 触发项目列表更新
@@ -127,6 +138,10 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
   const handleEditProject = async (projectId: number, data: EditProjectData) => {
     try {
       console.log('Editing project:', projectId, 'with data:', data);
+      
+      // 获取原项目数据以保留parent_id等字段
+      const originalProject = projects.find(p => p.id === projectId);
+      
       // 将 EditProjectData 转换为 UpdateProjectData
       const updateData: UpdateProjectData = {
         name: data.name,
@@ -134,8 +149,11 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
         color: data.color,
         icon: data.icon,
         is_default: data.is_default,
+        // 保留原有的parent_id，维持项目层级关系
+        parent_id: originalProject?.parent_id,
       };
-      await apiClient.updateProject(projectId, updateData);
+      
+      await updateProjectMutation.mutateAsync({ id: projectId, data: updateData });
       console.log('Project edited successfully');
       
       // 触发项目列表更新
@@ -152,7 +170,7 @@ export function Dashboard({ projects, onProjectsUpdate }: DashboardProps) {
   const handleDeleteProject = async (projectId: number) => {
     try {
       console.log('Deleting project:', projectId);
-      await apiClient.deleteProject(projectId);
+      await deleteProjectMutation.mutateAsync(projectId);
       console.log('Project deleted successfully');
       
       // 如果删除的是当前选中的项目，回到概览页面
