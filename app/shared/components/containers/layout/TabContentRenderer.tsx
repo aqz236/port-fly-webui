@@ -1,6 +1,6 @@
 import { TabsContent } from "~/shared/components/ui/tabs"
 import { GroupDetail } from "~/features/groups/components/GroupDetail"
-import { ProjectDetail } from "~/features/projects/components/ProjectDetail"
+import { ProjectDetailV2 } from "~/features/projects/components/ProjectDetail.v2"
 import { useLayoutStore } from "~/store/slices/layoutStore"
 import type { Tab } from "~/store/slices/layoutStore"
 
@@ -44,11 +44,10 @@ export function TabContentRenderer({
             (() => {
               const project = getProjectById(tab.projectId)
               return project ? (
-                <ProjectDetail 
+                <ProjectDetailV2 
                   project={project}
                   stats={getProjectStats(tab.projectId)}
                   onGroupClick={onGroupClick}
-                  onAddGroup={() => onAddGroup(tab.projectId)}
                 />
               ) : (
                 <div className="p-6 text-center text-muted-foreground">
