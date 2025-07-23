@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/shared/components/ui/card";
 import { Badge } from "~/shared/components/ui/badge";
-import { ActionButton } from "~/shared/common/ActionButton";
+import { ActionButton } from "~/shared/components/common/ActionButton";
 import type { PortForward } from "~/shared/types/api";
 
 interface PortForwardCardProps {

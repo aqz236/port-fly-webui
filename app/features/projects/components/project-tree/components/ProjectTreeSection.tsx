@@ -12,7 +12,7 @@ import {
 } from '~/shared/components/ui/sidebar';
 import { ProjectTree } from './ProjectTree';
 import type { Project, CreateProjectData, MoveProjectParams } from '~/shared/types/api';
-import type { SelectedItem } from '../../../../../components/layout/AppSidebar';
+import type { SelectedItem } from '../../../../../shared/components/layouts/AppLayout/AppSidebar';
 import type { EditProjectData } from '~/features/projects/components/dialogs/edit-project-dialog';
 
 interface ProjectTreeSectionProps {

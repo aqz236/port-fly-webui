@@ -1,0 +1,64 @@
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+} from "~/shared/components/ui/sidebar";
+import type { CreateProjectData, MoveProjectParams, Project } from "~/shared/types/api";
+import type { EditProjectData } from "~/features/projects/components/dialogs/edit-project-dialog";
+import { SidebarOverview } from "./SidebarOverview";
+import { ProjectTreeSection } from "~/features/projects/components/project-tree";
+
+
+export type ViewType = 'overview' | 'project' | 'group';
+
+export interface SelectedItem {
+  type: ViewType;
+  projectId?: number;
+  groupId?: number;
+}
+
+interface AppSidebarProps {
+  projects: Project[];
+  selected: SelectedItem;
+  onSelect: (selected: SelectedItem) => void;
+  onCreateProject?: (data: CreateProjectData) => Promise<void>;
+  onEditProject?: (projectId: number, data: EditProjectData) => Promise<void>;
+  onDeleteProject?: (projectId: number) => Promise<void>;
+  onMoveProject?: (params: MoveProjectParams) => Promise<void>;
+}
+
+export function AppSidebar({ 
+  projects, 
+  selected, 
+  onSelect, 
+  onCreateProject,
+  onEditProject,
+  onDeleteProject,
+  onMoveProject 
+}: AppSidebarProps) {
+  return (
+    <Sidebar>
+      <SidebarContent>
+        <SidebarHeader />
+        
+        <SidebarOverview 
+          selected={selected}
+          onSelect={onSelect}
+        />
+        
+        <ProjectTreeSection
+          projects={projects}
+          selected={selected}
+          onSelect={onSelect}
+          onCreateProject={onCreateProject}
+          onEditProject={onEditProject}
+          onDeleteProject={onDeleteProject}
+          onMoveProject={onMoveProject}
+        />
+        
+        <SidebarFooter />
+      </SidebarContent>
+    </Sidebar>
+  );
+}

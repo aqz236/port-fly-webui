@@ -1,164 +1,45 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { SidebarProvider, SidebarInset } from "~/shared/components/ui/sidebar";
-import { AppSidebar } from "~/components/layout";
-import { AppHeader } from "~/components/layout/AppHeader";
-import { Dashboard } from "~/components/Dashboard";
-import { GroupDetail } from "~/features/groups/components/GroupDetail";
-import { ProjectDetail } from "~/features/projects/components/ProjectDetail";
-import { OverviewView, ProjectView } from "~/components/views";
+import { AppSidebar } from "~/shared/components/layouts/AppLayout";
+import { AppHeader } from "~/shared/components/layouts/AppLayout/AppHeader";
 import { TabsContent } from "~/shared/components/ui/tabs";
 import { Button } from "~/shared/components/ui/button";
-import type { Group, GroupStats, ProjectStats } from "~/shared/types/api";
+import type { Project, Group, GroupStats, ProjectStats } from "~/shared/types/api";
+import type { SelectedItem } from "~/shared/components/layouts/AppLayout";
 import { mockGroups } from "~/lib/mock-data";
-import type { SelectedItem } from "~/components/layout";
-import type { CreateProjectData, MoveProjectParams, Project } from "~/shared/types/api";
-import type { EditProjectData } from "~/features/projects/components/dialogs/edit-project-dialog";
-import { 
-  useCreateProject, 
-  useUpdateProject, 
-  useDeleteProject, 
-  useMoveProject 
-} from "~/shared/api/hooks";
+import { GroupDetail } from "~/features/groups/components/GroupDetail";
+import { ProjectDetail } from "~/features/projects/components/ProjectDetail";
+import { DashboardPage } from "~/pages";
+import { useTabManager } from "./useTabManager";
+import { useProjectActions } from "./useProjectActions";
 
-// 标签页相关类型
-interface GroupTab {
-  id: string;
-  groupId: number;
-  title: string;
-  type: 'group';
-}
-
-interface ProjectTab {
-  id: string;
-  projectId: number;
-  title: string;
-  type: 'project';
-}
-
-type Tab = GroupTab | ProjectTab;
-
-interface MainLayoutProps {
+interface AppLayoutContainerProps {
   projects: Project[];
   onProjectsUpdate: () => void;
 }
 
-export function MainLayout({ projects, onProjectsUpdate }: MainLayoutProps) {
-  const [tabs, setTabs] = useState<Tab[]>([]);
-  const [activeTab, setActiveTab] = useState<string>("");
+export function AppLayoutContainer({ projects, onProjectsUpdate }: AppLayoutContainerProps) {
   const [selected, setSelected] = useState<SelectedItem>({ type: 'overview' });
 
-  // 使用 mutation hooks
-  const createProjectMutation = useCreateProject();
-  const updateProjectMutation = useUpdateProject();
-  const deleteProjectMutation = useDeleteProject();
-  const moveProjectMutation = useMoveProject();
+  // 使用标签页管理hook
+  const {
+    tabs,
+    activeTab,
+    getProjectById,
+    getGroupById,
+    openGroupTab,
+    openProjectTab,
+    closeTab,
+    handleTabChange
+  } = useTabManager({ projects });
 
-  // 根据ID获取项目数据
-  const getProjectById = useCallback((projectId: number): Project | null => {
-    return projects.find(p => p.id === projectId) || null;
-  }, [projects]);
-
-  // 根据ID获取组数据  
-  const getGroupById = useCallback((groupId: number): Group | null => {
-    // 先从项目中查找
-    for (const project of projects) {
-      if (project.groups) {
-        const group = project.groups.find((g: any) => g.id === groupId);
-        if (group) return group as Group;
-      }
-    }
-    // 如果找不到，从模拟数据中查找
-    return mockGroups.find(g => g.id === groupId) || null;
-  }, [projects]);
-
-  // 监听项目数据变化，更新标签页标题
-  useEffect(() => {
-    setTabs(currentTabs => 
-      currentTabs.map(tab => {
-        if (tab.type === 'project') {
-          const project = getProjectById(tab.projectId);
-          if (project && project.name !== tab.title) {
-            return { ...tab, title: project.name };
-          }
-        } else if (tab.type === 'group') {
-          const group = getGroupById(tab.groupId);
-          if (group && group.name !== tab.title) {
-            return { ...tab, title: group.name };
-          }
-        }
-        return tab;
-      })
-    );
-  }, [projects, getProjectById, getGroupById]);
-
-  // 打开新的Group标签页
-  const openGroupTab = useCallback((group: Group) => {
-    const tabId = `group-${group.id}`;
-    
-    // 检查是否已经打开了这个组
-    const existingTab = tabs.find(tab => tab.id === tabId);
-    if (existingTab) {
-      setActiveTab(tabId);
-      return;
-    }
-
-    // 创建新标签页
-    const newTab: GroupTab = {
-      id: tabId,
-      groupId: group.id,
-      title: group.name,
-      type: 'group'
-    };
-
-    setTabs(prev => [...prev, newTab]);
-    setActiveTab(tabId);
-  }, [tabs]);
-
-  // 打开新的Project标签页
-  const openProjectTab = useCallback((project: Project) => {
-    const tabId = `project-${project.id}`;
-    
-    // 检查是否已经打开了这个项目
-    const existingTab = tabs.find(tab => tab.id === tabId);
-    if (existingTab) {
-      setActiveTab(tabId);
-      return;
-    }
-
-    // 创建新标签页
-    const newTab: ProjectTab = {
-      id: tabId,
-      projectId: project.id,
-      title: project.name,
-      type: 'project'
-    };
-
-    setTabs(prev => [...prev, newTab]);
-    setActiveTab(tabId);
-  }, [tabs]);
-
-  // 关闭标签页
-  const closeTab = useCallback((tabId: string) => {
-    setTabs(prev => {
-      const newTabs = prev.filter(tab => tab.id !== tabId);
-      
-      // 如果关闭的是当前活跃标签页，切换到其他标签页
-      if (activeTab === tabId) {
-        if (newTabs.length > 0) {
-          setActiveTab(newTabs[newTabs.length - 1].id);
-        } else {
-          setActiveTab("");
-        }
-      }
-      
-      return newTabs;
-    });
-  }, [activeTab]);
-
-  // 切换标签页
-  const handleTabChange = useCallback((tabId: string) => {
-    setActiveTab(tabId);
-  }, []);
+  // 使用项目操作hook
+  const {
+    handleCreateProject,
+    handleEditProject,
+    handleDeleteProject,
+    handleMoveProject
+  } = useProjectActions({ onProjectsUpdate });
 
   // 处理侧边栏选择
   const handleSidebarSelect = useCallback((selectedItem: SelectedItem) => {
@@ -194,66 +75,18 @@ export function MainLayout({ projects, onProjectsUpdate }: MainLayoutProps) {
     setSelected(selectedItem);
   }, [projects, openGroupTab, openProjectTab]);
 
-  // 创建项目处理函数
-  const handleCreateProject = useCallback(async (data: CreateProjectData) => {
-    try {
-      await createProjectMutation.mutateAsync(data);
-      onProjectsUpdate();
-    } catch (error) {
-      console.error('创建项目失败:', error);
-    }
-  }, [createProjectMutation, onProjectsUpdate]);
-
-  // 编辑项目处理函数
-  const handleEditProject = useCallback(async (projectId: number, data: EditProjectData) => {
-    try {
-      await updateProjectMutation.mutateAsync({ id: projectId, data });
-      onProjectsUpdate();
-    } catch (error) {
-      console.error('编辑项目失败:', error);
-    }
-  }, [updateProjectMutation, onProjectsUpdate]);
-
-  // 删除项目处理函数
-  const handleDeleteProject = useCallback(async (projectId: number) => {
-    try {
-      await deleteProjectMutation.mutateAsync(projectId);
-      onProjectsUpdate();
-    } catch (error) {
-      console.error('删除项目失败:', error);
-    }
-  }, [deleteProjectMutation, onProjectsUpdate]);
-
-  // 移动项目处理函数
-  const handleMoveProject = useCallback(async (params: MoveProjectParams) => {
-    try {
-      await moveProjectMutation.mutateAsync(params);
-      onProjectsUpdate();
-    } catch (error) {
-      console.error('移动项目失败:', error);
-    }
-  }, [moveProjectMutation, onProjectsUpdate]);
-
-  // 获取选中的项目
-  const getSelectedProject = useCallback((): Project | null => {
-    if (selected.projectId) {
-      return projects.find(p => p.id === selected.projectId) || null;
-    }
-    return null;
-  }, [projects, selected.projectId]);
-
   // 获取页面标题
   const getPageTitle = useCallback((): string => {
     switch (selected.type) {
       case 'project':
-        return getSelectedProject()?.name || '项目';
+        const selectedProject = projects.find(p => p.id === selected.projectId);
+        return selectedProject?.name || '项目';
       case 'group':
-        // 如果是组但在标签页中，标题由标签页管理
         return '组';
       default:
         return '概览';
     }
-  }, [selected.type, getSelectedProject]);
+  }, [selected, projects]);
 
   // 渲染主要内容
   const renderMainContent = useCallback(() => {
@@ -265,13 +98,10 @@ export function MainLayout({ projects, onProjectsUpdate }: MainLayoutProps) {
     switch (selected.type) {
       case 'overview':
         return (
-          <OverviewView
+          <DashboardPage
             projects={projects}
-            onProjectSelect={(projectId) => {
-              const project = projects.find(p => p.id === projectId);
-              if (project) {
-                openProjectTab(project);
-              }
+            onProjectClick={(project) => {
+              openProjectTab(project);
             }}
           />
         );

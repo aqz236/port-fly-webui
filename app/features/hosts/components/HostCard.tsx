@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/shared/components/ui/card";
 import { Badge } from "~/shared/components/ui/badge";
-import { StatusBadge, StatusType } from "~/shared/common/StatusBadge";
-import { ActionButton } from "~/shared/common/ActionButton";
+import { StatusBadge, StatusType } from "~/shared/components/common/StatusBadge";
+import { ActionButton } from "~/shared/components/common/ActionButton";
 import type { Host } from "~/shared/types/api";
 
 interface HostCardProps {

@@ -9,7 +9,7 @@ import {
   SidebarOverview,
   SidebarFooter,
   ProjectTreeSection,
-} from "./sidebar/index";
+} from "./AppSidebar/index";
 
 export type ViewType = 'overview' | 'project' | 'group';
 

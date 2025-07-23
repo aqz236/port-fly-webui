@@ -1,15 +1,15 @@
-import { StatCard } from "~/shared/common/StatCard";
+import { StatCard } from "~/shared/components/common/StatCard";
 import { ProjectList } from "~/features/projects/components";
 import { FolderOpen, Server, Zap, Activity } from "lucide-react";
 import type { Project, Group } from "~/shared/types/api";
 
-interface OverviewViewProps {
+interface DashboardPageProps {
   projects: Project[];
-  onProjectSelect: (projectId: number) => void;
+  onProjectClick?: (project: Project) => void;
 }
 
-export function OverviewView({ projects, onProjectSelect }: OverviewViewProps) {
-  // 计算统计数据 - 添加空值检查和明确类型
+export function DashboardPage({ projects, onProjectClick }: DashboardPageProps) {
+  // 计算统计数据
   const totalGroups = projects.reduce((sum: number, p: Project) => sum + (p.groups?.length || 0), 0);
   const totalHosts = projects.reduce((sum: number, p: Project) => 
     sum + (p.groups?.reduce((gSum: number, g: Group) => gSum + (g.hosts?.length || 0), 0) || 0), 0);
@@ -31,37 +31,39 @@ export function OverviewView({ projects, onProjectSelect }: OverviewViewProps) {
         <StatCard
           title="项目总数"
           value={projects.length}
-          description="工作空间"
           icon={FolderOpen}
+          description="管理的项目数量"
         />
         <StatCard
-          title="总主机数"
-          value={totalHosts}
-          description="SSH连接"
+          title="资源组"
+          value={totalGroups}
           icon={Server}
+          description="所有项目的资源组"
+        />
+        <StatCard
+          title="主机数量"
+          value={totalHosts}
+          icon={Server}
+          description="配置的主机总数"
         />
         <StatCard
           title="端口转发"
           value={totalPorts}
-          description="隧道规则"
           icon={Zap}
-        />
-        <StatCard
-          title="活跃连接"
-          value={activeConnections}
-          description="实时数据"
-          icon={Activity}
+          description="配置的端口转发"
         />
       </div>
-      
+
       {/* 项目列表 */}
       <div>
-        <h3 className="text-lg font-medium mb-4">最近项目</h3>
+        <h3 className="text-lg font-semibold mb-4">项目列表</h3>
         <ProjectList 
-          projects={projects}
-          onProjectClick={(project) => onProjectSelect(project.id)}
+          projects={projects} 
+          onProjectClick={onProjectClick}
         />
       </div>
     </div>
   );
 }
+
+export default DashboardPage;

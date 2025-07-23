@@ -12,7 +12,7 @@ import {
 } from 'react-complex-tree';
 import { GripVertical, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import type { Project, CreateProjectData, MoveProjectParams } from '~/shared/types/api';
-import type { SelectedItem } from '../../../../../components/layout/AppSidebar';
+import type { SelectedItem } from '../../../../../shared/components/layouts/AppLayout/AppSidebar';
 import { useProjectTreeState } from '../hooks/useProjectTreeState';
 import { useProjectTreeDragDrop } from '../hooks/useProjectTreeDragDrop';
 import { convertToRCTFormat, getNodeTitle, createTreeConfig } from '../utils/tree-utils';
