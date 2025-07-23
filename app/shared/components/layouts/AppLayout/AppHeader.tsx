@@ -3,23 +3,7 @@ import { Separator } from "~/shared/components/ui/separator";
 import { Button } from "~/shared/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/shared/components/ui/tabs";
 import { Search, Bell, User, X } from "lucide-react";
-
-// 本地标签页类型定义
-interface GroupTab {
-  id: string;
-  groupId: number;
-  title: string;
-  type: 'group';
-}
-
-interface ProjectTab {
-  id: string;
-  projectId: number;
-  title: string;
-  type: 'project';
-}
-
-type Tab = GroupTab | ProjectTab;
+import type { Tab } from "~/store/slices/layoutStore";
 
 interface AppHeaderProps {
   title: string;
@@ -28,9 +12,6 @@ interface AppHeaderProps {
   onTabChange?: (tabId: string) => void;
   onTabClose?: (tabId: string) => void;
   children?: React.ReactNode;
-  // 添加获取实体数据的回调
-  getProjectById?: (id: number) => any;
-  getGroupById?: (id: number) => any;
 }
 
 export function AppHeader({ 
@@ -39,20 +20,11 @@ export function AppHeader({
   activeTab, 
   onTabChange, 
   onTabClose,
-  children,
-  getProjectById,
-  getGroupById
+  children
 }: AppHeaderProps) {
   // 获取标签页的颜色
   const getTabColor = (tab: Tab): string => {
-    if (tab.type === 'group' && getGroupById) {
-      const group = getGroupById(tab.groupId);
-      return group?.color || '#10b981';
-    } else if (tab.type === 'project' && getProjectById) {
-      const project = getProjectById(tab.projectId);
-      return project?.color || '#6366f1';
-    }
-    return '#64748b';
+    return tab.color || '#64748b';
   };
   return (
     <div className="flex flex-col border-b">
