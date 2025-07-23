@@ -9,6 +9,7 @@ import type { LinksFunction } from "@remix-run/node";
 import { QueryProvider } from "./providers/QueryProvider";
 
 import "./tailwind.css";
+import "@xterm/xterm/css/xterm.css";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

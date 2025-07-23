@@ -1,6 +1,10 @@
-// 终端实例管理服务
-import type { Terminal as ITerminal } from '@xterm/xterm';
-import type { FitAddon as IFitAddon } from '@xterm/addon-fit';
+// 终端实例服务
+import type { Terminal as XTerminal } from '@xterm/xterm';
+import type { FitAddon as XFitAddon } from '@xterm/addon-fit';
+import XTermPkg from '@xterm/xterm';
+const { Terminal } = XTermPkg;
+import FitAddonPkg from '@xterm/addon-fit';
+const { FitAddon } = FitAddonPkg;
 import { TerminalInstance, TerminalConfig } from '../types';
 import { DEFAULT_TERMINAL_CONFIG } from '../config';
 

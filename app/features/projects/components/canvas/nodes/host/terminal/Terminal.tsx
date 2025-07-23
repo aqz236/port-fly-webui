@@ -86,7 +86,7 @@ export function Terminal({
   // 嵌入模式渲染
   if (embedded) {
     return (
-      <div className="h-full flex flex-col bg-[#1e1e1e]">
+      <div className="h-full w-full flex flex-col overflow-hidden">
         <TerminalHeader
           host={host}
           state={state}
@@ -94,13 +94,13 @@ export function Terminal({
           embedded={true}
         />
         
-        <div className="flex-1 relative">
+        <div className="flex-1 relative overflow-hidden">
           <div 
             ref={terminalRef}
-            className="h-full w-full"
+            className="h-full w-full overflow-hidden"
             style={{ 
               backgroundColor: '#1e1e1e',
-              padding: '8px'
+              padding: '4px'
             }}
           />
           

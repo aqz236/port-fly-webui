@@ -2,12 +2,12 @@
 import { create } from 'zustand';
 import { Host } from '~/shared/types/host';
 import { TerminalState } from '~/features/projects/components/canvas/nodes/host/types';
-import type { Terminal as ITerminal } from '@xterm/xterm';
-import type { FitAddon as IFitAddon } from '@xterm/addon-fit';
+import type { Terminal as XTerminal } from '@xterm/xterm';
+import type { FitAddon as XFitAddon } from '@xterm/addon-fit';
 
 interface TerminalInstance {
-  terminal: ITerminal;
-  fitAddon: IFitAddon;
+  terminal: XTerminal;
+  fitAddon: XFitAddon;
   websocket: WebSocket | null;
   isActive: boolean;
 }
@@ -40,13 +40,7 @@ export const useTerminalStore = create<TerminalStore>((set, get) => ({
   sessions: new Map(),
 
   openTerminal: (host: Host, projectId: number) => {
-    // 动态导入布局存储以避免循环依赖
-    import('~/store/slices/layoutStore').then(({ useLayoutStore }) => {
-      const { openTerminalTab } = useLayoutStore.getState();
-      openTerminalTab(host, projectId);
-    });
-    
-    // 创建或获取终端会话
+    // 创建或获取终端会话（不再依赖布局存储的标签页管理）
     const hostId = host.id;
     const existingSession = get().sessions.get(hostId);
     

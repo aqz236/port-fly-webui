@@ -1,6 +1,7 @@
-// Terminal 模块类型定义
-import type { Terminal as ITerminal } from '@xterm/xterm';
-import type { FitAddon as IFitAddon } from '@xterm/addon-fit';
+// 终端相关类型定义
+import { ReactNode } from 'react';
+import type { Terminal as XTerminal } from '@xterm/xterm';
+import type { FitAddon as XFitAddon } from '@xterm/addon-fit';
 import { Host } from '~/shared/types/host';
 
 // 终端连接状态
@@ -14,8 +15,8 @@ export interface TerminalState {
 
 // 终端实例
 export interface TerminalInstance {
-  terminal: ITerminal;
-  fitAddon: IFitAddon;
+  terminal: XTerminal;
+  fitAddon: XFitAddon;
   websocket: WebSocket | null;
   isActive: boolean;
   createdAt: Date;

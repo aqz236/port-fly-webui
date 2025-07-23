@@ -14,6 +14,7 @@ import {
   Activity,
   Info
 } from 'lucide-react';
+import { useNavigate } from "@remix-run/react";
 
 import { Host } from '~/shared/types/host';
 import { HostNodeData } from './types';
@@ -37,6 +38,7 @@ export const HostNode = memo(function HostNode({ data }: NodeProps) {
   } = data as unknown as HostNodeData;
 
   const { openTerminal } = useTerminalStore();
+  const navigate = useNavigate();
 
   // 获取状态颜色
   const getStatusColor = () => {
@@ -92,8 +94,13 @@ export const HostNode = memo(function HostNode({ data }: NodeProps) {
       return;
     }
     
-    // 使用终端存储打开终端标签页
+    // 使用终端存储打开终端会话（为了保持状态）
     openTerminal(host, projectId);
+    
+    // 使用路由导航到终端页面
+    navigate(`/app/terminal/${host.id}`);
+    
+    // 调用回调函数（如果需要）
     onOpenTerminal?.(host.id);
   };
 
