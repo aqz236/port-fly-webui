@@ -198,7 +198,12 @@ export function ProjectTree({
 
   // 创建一个基于树数据的key，确保在乐观更新时重新渲染
   const treeKey = React.useMemo(() => {
-    const nodeStates = treeNodes.map(node => `${node.id}:${node.isFolder}:${node.children.length}`).join(',');
+    const nodeStates = treeNodes.map(node => {
+      // 包含节点的核心属性，确保任何变化都会触发重新渲染
+      const project = node.project;
+      const projectInfo = project ? `${project.name}:${project.icon}:${project.color}` : '';
+      return `${node.id}:${node.isFolder}:${node.children.length}:${projectInfo}`;
+    }).join(',');
     return `tree-${nodeStates}`;
   }, [treeNodes]);
 
