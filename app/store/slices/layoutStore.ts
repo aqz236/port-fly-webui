@@ -10,11 +10,30 @@ export interface SelectedItem {
   groupId?: number
 }
 
+// 标签页类型（用于排序和持久化）
+export interface TabItem {
+  id: string
+  title: string
+  path: string
+  type: 'overview' | 'project' | 'group' | 'terminal'
+  color?: string
+  closable?: boolean
+  order: number
+}
+
 // 布局状态接口
 interface LayoutState {
   // 选中状态
   selected: SelectedItem
   setSelected: (selected: SelectedItem) => void
+  
+  // 标签页管理
+  tabs: TabItem[]
+  activeTab: string | null
+  addTab: (tab: Omit<TabItem, 'order'>) => void
+  removeTab: (tabId: string) => void
+  reorderTabs: (tabIds: string[]) => void
+  setActiveTab: (tabId: string) => void
   
   // 数据查找助手
   projects: Project[]
@@ -57,6 +76,8 @@ export const useLayoutStore = create<LayoutState>()(
       // 初始状态
       selected: { type: 'overview' },
       projects: [],
+      tabs: [],
+      activeTab: null,
 
       // 选中状态管理
       setSelected: (selected) => {
@@ -66,6 +87,75 @@ export const useLayoutStore = create<LayoutState>()(
       // 项目数据管理
       setProjects: (projects) => {
         set({ projects }, false, 'setProjects')
+      },
+
+      // 标签页管理
+      addTab: (tabData) => {
+        const { tabs } = get()
+        
+        // 检查标签页是否已存在
+        const existingTab = tabs.find(tab => tab.id === tabData.id)
+        if (existingTab) {
+          // 更新现有标签页信息
+          const updatedTabs = tabs.map(tab => 
+            tab.id === tabData.id ? { ...tab, ...tabData } : tab
+          )
+          set({ tabs: updatedTabs, activeTab: tabData.id }, false, 'updateTab')
+          return
+        }
+
+        // 添加新标签页，order为当前最大order + 1
+        const maxOrder = tabs.length > 0 ? Math.max(...tabs.map(t => t.order)) : -1
+        const newTab: TabItem = {
+          ...tabData,
+          order: maxOrder + 1
+        }
+
+        set(
+          { tabs: [...tabs, newTab], activeTab: newTab.id },
+          false,
+          'addTab'
+        )
+      },
+
+      removeTab: (tabId) => {
+        const { tabs, activeTab } = get()
+        const newTabs = tabs.filter(tab => tab.id !== tabId)
+        
+        let newActiveTab = activeTab
+        if (activeTab === tabId) {
+          // 如果关闭的是当前活动标签页，切换到下一个或上一个
+          const currentIndex = tabs.findIndex(tab => tab.id === tabId)
+          if (newTabs.length > 0) {
+            if (currentIndex > 0) {
+              newActiveTab = newTabs[currentIndex - 1].id
+            } else {
+              newActiveTab = newTabs[0].id
+            }
+          } else {
+            newActiveTab = null
+          }
+        }
+
+        set(
+          { tabs: newTabs, activeTab: newActiveTab },
+          false,
+          'removeTab'
+        )
+      },
+
+      reorderTabs: (tabIds) => {
+        const { tabs } = get()
+        const reorderedTabs = tabIds.map((id, index) => {
+          const tab = tabs.find(t => t.id === id)
+          return tab ? { ...tab, order: index } : null
+        }).filter(Boolean) as TabItem[]
+
+        set({ tabs: reorderedTabs }, false, 'reorderTabs')
+      },
+
+      setActiveTab: (tabId) => {
+        set({ activeTab: tabId }, false, 'setActiveTab')
       },
 
       // 数据查找助手
@@ -98,7 +188,9 @@ export const useLayoutStore = create<LayoutState>()(
       reset: () => {
         set({
           selected: { type: 'overview' },
-          projects: []
+          projects: [],
+          tabs: [],
+          activeTab: null
         }, false, 'reset')
       }
     }),

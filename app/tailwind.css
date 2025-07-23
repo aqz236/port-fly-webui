@@ -14,6 +14,16 @@ body {
   }
 }
 
+/* 隐藏水平滚动条但保持功能 */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 
 
 @layer base {

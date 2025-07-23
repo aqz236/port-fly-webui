@@ -7,7 +7,8 @@ import { Project } from "~/shared/types/project";
 import { useProjects } from "~/shared/api/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { RemixTabBrowser } from "~/shared/components/navigation/RemixTabBrowser";
+import { DraggableTabBrowser } from "~/shared/components/navigation/DraggableTabBrowser";
+import { PersistentTabContent } from "~/shared/components/containers/PersistentTabContent";
 
 export default function AppLayout() {
   const navigate = useNavigate();
@@ -85,10 +86,12 @@ export default function AppLayout() {
         />
         
         <SidebarInset className="flex-1">
-          {/* 使用新的标签页浏览器 */}
-          <RemixTabBrowser>
-            <Outlet />
-          </RemixTabBrowser>
+          {/* 使用新的可拖拽标签页浏览器 */}
+          <DraggableTabBrowser>
+            <PersistentTabContent>
+              <Outlet />
+            </PersistentTabContent>
+          </DraggableTabBrowser>
         </SidebarInset>
       </div>
     </SidebarProvider>
