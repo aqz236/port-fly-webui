@@ -1,4 +1,5 @@
-import { PortForwardCard, PortForward } from "./PortForwardCard";
+import { PortForward } from "~/shared/types/api";
+import { PortForwardCard,  } from "./PortForwardCard";
 
 interface PortForwardListProps {
   ports: PortForward[];

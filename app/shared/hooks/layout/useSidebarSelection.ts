@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 import { useLayoutStore } from "~/store/slices/layoutStore"
-import { mockGroups } from "~/lib/mock-data"
+import { mockGroups } from "~/shared/utils/mock-data"
 import type { SelectedItem } from "~/store/slices/layoutStore"
 import type { Project, Group } from "~/shared/types/api"
 

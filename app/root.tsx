@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
-import { QueryProvider } from "./lib/providers/QueryProvider";
+import { QueryProvider } from "./providers/QueryProvider";
 
 import "./tailwind.css";
 

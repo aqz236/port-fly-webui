@@ -1,6 +1,6 @@
 import { Button } from "~/shared/components/ui/button"
 import { DashboardPage } from "~/pages"
-import { mockGroups } from "~/lib/mock-data"
+import { mockGroups } from "~/shared/utils/mock-data"
 import { useLayoutStore } from "~/store/slices/layoutStore"
 import type { Project } from "~/shared/types/api"
 

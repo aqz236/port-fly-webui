@@ -1,4 +1,5 @@
-import { HostCard, Host } from "./HostCard";
+import { Host } from "~/shared/types/api";
+import { HostCard,  } from "./HostCard";
 
 interface HostListProps {
   hosts: Host[];
