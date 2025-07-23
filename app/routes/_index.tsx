@@ -1,7 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useQueryClient } from "@tanstack/react-query";
 import { MainLayout } from "~/components/layout/MainLayout";
-import { useProjects } from "~/lib/hooks/api";
+import { useProjects } from "~/shared/api/hooks";
 
 export const meta: MetaFunction = () => {
   return [

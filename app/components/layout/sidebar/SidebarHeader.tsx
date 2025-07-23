@@ -1,5 +1,5 @@
 import { Zap } from "lucide-react";
-import { SidebarHeader as ShadcnSidebarHeader } from "~/components/ui/sidebar";
+import { SidebarHeader as ShadcnSidebarHeader } from "~/shared/components/ui/sidebar";
 
 export function SidebarHeader() {
   return (

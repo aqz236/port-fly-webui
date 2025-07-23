@@ -1,8 +1,8 @@
-import { Button } from "~/components/ui/button";
-import { HostList } from "~/components/features/hosts";
-import { PortForwardList } from "~/components/features/ports";
+import { Button } from "~/shared/components/ui/button";
+import { HostList } from "~/features/hosts/components";
+import { PortForwardList } from "~/features/port-forwards/components";
 import { Plus } from "lucide-react";
-import type { Group, Host, PortForward } from "~/types/api";
+import type { Group, Host, PortForward } from "~/shared/types/api";
 
 interface GroupViewProps {
   group: Group;

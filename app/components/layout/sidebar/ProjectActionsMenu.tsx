@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { Plus, FileText, Upload, Download } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/shared/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+} from "~/shared/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-} from "~/components/ui/sidebar";
-import { CreateProjectDialog } from "~/components/dialogs";
-import type { CreateProjectData } from "~/types/api";
+} from "~/shared/components/ui/sidebar";
+import type { CreateProjectData } from "~/shared/types/api";
+import { CreateProjectDialog } from "~/features/projects/components";
 
 interface ProjectActionsMenuProps {
   onCreateProject?: (data: CreateProjectData) => Promise<void>;

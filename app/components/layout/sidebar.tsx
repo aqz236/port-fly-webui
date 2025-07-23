@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Link, useLocation } from "@remix-run/react";
 import { cn } from "~/lib/utils";
-import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
+import { Button } from "~/shared/components/ui/button";
+import { Badge } from "~/shared/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+} from "~/shared/components/ui/dropdown-menu";
 import {
   Server,
   Folder,

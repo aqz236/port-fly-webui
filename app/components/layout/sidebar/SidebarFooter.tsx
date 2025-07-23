@@ -6,7 +6,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter as ShadcnSidebarFooter,
-} from "~/components/ui/sidebar";
+} from "~/shared/components/ui/sidebar";
 
 export function SidebarFooter() {
   return (

@@ -1,24 +1,24 @@
 import { useState, useCallback, useEffect } from "react";
-import { SidebarProvider, SidebarInset } from "~/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "~/shared/components/ui/sidebar";
 import { AppSidebar } from "~/components/layout";
 import { AppHeader } from "~/components/layout/AppHeader";
 import { Dashboard } from "~/components/Dashboard";
-import { GroupDetail } from "~/components/features/groups/GroupDetail";
-import { ProjectDetail } from "~/components/features/projects/ProjectDetail";
+import { GroupDetail } from "~/features/groups/components/GroupDetail";
+import { ProjectDetail } from "~/features/projects/components/ProjectDetail";
 import { OverviewView, ProjectView } from "~/components/views";
-import { TabsContent } from "~/components/ui/tabs";
-import { Button } from "~/components/ui/button";
-import type { Group, GroupStats, ProjectStats } from "~/types/api";
+import { TabsContent } from "~/shared/components/ui/tabs";
+import { Button } from "~/shared/components/ui/button";
+import type { Group, GroupStats, ProjectStats } from "~/shared/types/api";
 import { mockGroups } from "~/lib/mock-data";
 import type { SelectedItem } from "~/components/layout";
-import type { CreateProjectData, MoveProjectParams, Project } from "~/types/api";
-import type { EditProjectData } from "~/components/dialogs/edit-project-dialog";
+import type { CreateProjectData, MoveProjectParams, Project } from "~/shared/types/api";
+import type { EditProjectData } from "~/features/projects/components/dialogs/edit-project-dialog";
 import { 
   useCreateProject, 
   useUpdateProject, 
   useDeleteProject, 
   useMoveProject 
-} from "~/lib/hooks/api";
+} from "~/shared/api/hooks";
 
 // 标签页相关类型
 interface GroupTab {

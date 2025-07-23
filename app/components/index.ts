@@ -1,11 +1,11 @@
 // 通用组件
-export * from './common';
+export * from '../shared/common';
 
 // 功能组件
-export * from './features/projects';
-export * from './features/groups';
-export * from './features/hosts';
-export * from './features/ports';
+export * from '../features/projects/components';
+export * from '../features/groups/components';
+export * from '../features/hosts/components';
+export * from '../features/port-forwards/components';
 
 // 视图组件
 export * from './views';

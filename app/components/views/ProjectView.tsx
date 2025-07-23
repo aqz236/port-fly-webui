@@ -1,8 +1,8 @@
-import { Button } from "~/components/ui/button";
-import { StatCard } from "~/components/common/StatCard";
-import { GroupList } from "~/components/features/groups";
+import { Button } from "~/shared/components/ui/button";
+import { StatCard } from "~/shared/common/StatCard";
+import { GroupList } from "~/features/groups/components";
 import { Plus } from "lucide-react";
-import type { Project, Group } from "~/types/api";
+import type { Project, Group } from "~/shared/types/api";
 
 interface ProjectViewProps {
   project: Project;

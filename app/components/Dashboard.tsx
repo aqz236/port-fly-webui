@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { SidebarProvider, SidebarInset } from "~/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "~/shared/components/ui/sidebar";
 import { AppSidebar, AppHeader, ViewType, SelectedItem } from "~/components/layout";
 import { OverviewView, ProjectView, GroupView } from "~/components/views";
-import { ProjectCard } from "~/components/features/projects";
-import { GroupCard } from "~/components/features/groups";
+import { ProjectCard } from "~/features/projects/components";
+import { GroupCard } from "~/features/groups/components";
 import { 
   useCreateProject, 
   useUpdateProject, 
   useDeleteProject, 
   useMoveProject 
-} from "~/lib/hooks/api";
-import type { CreateProjectData, UpdateProjectData, MoveProjectParams, Project, Group, Host, PortForward } from "~/types/api";
-import type { EditProjectData } from "~/components/dialogs/edit-project-dialog";
+} from "~/shared/api/hooks";
+import type { CreateProjectData, UpdateProjectData, MoveProjectParams, Project, Group, Host, PortForward } from "~/shared/types/api";
+import type { EditProjectData } from "~/features/projects/components/dialogs/edit-project-dialog";
 
 interface DashboardProps {
   projects: Project[];

@@ -1,9 +1,9 @@
 import {
   Sidebar,
   SidebarContent,
-} from "~/components/ui/sidebar";
-import type { CreateProjectData, MoveProjectParams, Project } from "~/types/api";
-import type { EditProjectData } from "~/components/dialogs/edit-project-dialog";
+} from "~/shared/components/ui/sidebar";
+import type { CreateProjectData, MoveProjectParams, Project } from "~/shared/types/api";
+import type { EditProjectData } from "~/features/projects/components/dialogs/edit-project-dialog";
 import {
   SidebarHeader,
   SidebarOverview,

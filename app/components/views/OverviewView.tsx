@@ -1,7 +1,7 @@
-import { StatCard } from "~/components/common/StatCard";
-import { ProjectList } from "~/components/features/projects";
+import { StatCard } from "~/shared/common/StatCard";
+import { ProjectList } from "~/features/projects/components";
 import { FolderOpen, Server, Zap, Activity } from "lucide-react";
-import type { Project, Group } from "~/types/api";
+import type { Project, Group } from "~/shared/types/api";
 
 interface OverviewViewProps {
   projects: Project[];

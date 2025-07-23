@@ -1,7 +1,7 @@
-import { SidebarTrigger } from "~/components/ui/sidebar";
-import { Separator } from "~/components/ui/separator";
-import { Button } from "~/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
+import { SidebarTrigger } from "~/shared/components/ui/sidebar";
+import { Separator } from "~/shared/components/ui/separator";
+import { Button } from "~/shared/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/shared/components/ui/tabs";
 import { Search, Bell, User, X } from "lucide-react";
 
 // 本地标签页类型定义
