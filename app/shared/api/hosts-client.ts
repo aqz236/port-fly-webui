@@ -46,6 +46,44 @@ export class HostsApiClient extends BaseApiClient {
     })
   }
 
+  async connectHost(id: number): Promise<Host> {
+    return this.request<Host>(`/api/v1/hosts/${id}/connect`, {
+      method: 'POST',
+    })
+  }
+
+  async disconnectHost(id: number): Promise<Host> {
+    return this.request<Host>(`/api/v1/hosts/${id}/disconnect`, {
+      method: 'POST',
+    })
+  }
+
+  async executeSSHCommand(
+    id: number, 
+    command: string, 
+    timeout?: number
+  ): Promise<{
+    success: boolean;
+    stdout: string;
+    stderr: string;
+    exitCode: number;
+    duration: number;
+  }> {
+    return this.request<{
+      success: boolean;
+      stdout: string;
+      stderr: string;
+      exitCode: number;
+      duration: number;
+    }>(`/api/v1/hosts/${id}/execute`, {
+      method: 'POST',
+      body: {
+        command,
+        timeout: timeout || 30000,
+      },
+    })
+  }
+
   async searchHosts(params: SearchParams): Promise<Host[]> {
     return this.request<Host[]>('/api/v1/hosts/search', { params })
   }

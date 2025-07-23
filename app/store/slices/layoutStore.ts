@@ -13,9 +13,10 @@ export interface SelectedItem {
 // 标签页类型
 export interface Tab {
   id: string
-  type: 'project' | 'group'
+  type: 'project' | 'group' | 'terminal'
   projectId: number
   groupId?: number
+  hostId?: number
   title: string
   color?: string
 }
@@ -31,6 +32,7 @@ interface LayoutState {
   activeTab: string | null
   openProjectTab: (project: Project) => void
   openGroupTab: (group: Group) => void
+  openTerminalTab: (host: any, projectId: number) => void
   closeTab: (tabId: string) => void
   setActiveTab: (tabId: string) => void
   
@@ -164,6 +166,37 @@ export const useLayoutStore = create<LayoutState>()(
           }),
           false,
           'openGroupTab'
+        )
+      },
+
+      openTerminalTab: (host, projectId) => {
+        const { tabs, setActiveTab } = get()
+        const tabId = `terminal-${host.id}`
+        
+        // 检查标签页是否已存在
+        const existingTab = tabs.find(tab => tab.id === tabId)
+        if (existingTab) {
+          setActiveTab(tabId)
+          return
+        }
+
+        // 创建新标签页
+        const newTab: Tab = {
+          id: tabId,
+          type: 'terminal',
+          projectId: projectId,
+          hostId: host.id,
+          title: `终端 - ${host.name}`,
+          color: '#10b981' // 绿色表示终端
+        }
+
+        set(
+          state => ({
+            tabs: [...state.tabs, newTab],
+            activeTab: tabId
+          }),
+          false,
+          'openTerminalTab'
         )
       },
 

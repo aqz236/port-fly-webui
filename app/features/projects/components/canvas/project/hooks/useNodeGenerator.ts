@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { Node } from '@xyflow/react';
 import { Project } from '~/shared/types/project';
 import { GroupNodeData } from '../../nodes/group';
+import { HostNodeData } from '../../nodes/host/types';
 import { CanvasHandlers, GroupNodeState } from '../types';
 import { calculateGridLayout, DEFAULT_LAYOUT_CONFIG } from '../utils/layout';
 
@@ -26,18 +27,20 @@ export function useNodeGenerator(
     }
 
     const positions = calculateGridLayout(project.groups, DEFAULT_LAYOUT_CONFIG);
+    const nodes: Node[] = [];
 
-    return project.groups.map((group, index) => {
+    project.groups.forEach((group, groupIndex) => {
       const nodeState = groupStates[group.id] || { 
         isExpanded: true, 
-        position: positions[index] 
+        position: positions[groupIndex] 
       };
       
       // 获取该组的主机和端口转发
       const groupHosts = group.hosts || [];
       const groupPorts = group.port_forwards || [];
 
-      const nodeData: GroupNodeData = {
+      // 创建组节点
+      const groupNodeData: GroupNodeData = {
         group,
         hosts: groupHosts,
         portForwards: groupPorts,
@@ -55,17 +58,48 @@ export function useNodeGenerator(
         onPortToggle: handlers.handlePortToggle,
       };
 
-      const node: Node = {
+      const groupNode: Node = {
         id: `group-${group.id}`,
         type: 'groupNode',
         position: nodeState.position,
-        data: nodeData as any,
+        data: groupNodeData as any,
         draggable: true,
         selectable: true,
       };
 
-      return node;
+      nodes.push(groupNode);
+
+      // 如果组是展开的，为每个主机创建独立的主机节点
+      if (nodeState.isExpanded && groupHosts.length > 0) {
+        groupHosts.forEach((host, hostIndex) => {
+          const hostNodeData: HostNodeData = {
+            host,
+            projectId: project.id,
+            onEdit: handlers.handleHostEdit,
+            onDelete: handlers.handleHostDelete,
+            onConnect: handlers.handleHostConnect,
+            onDisconnect: handlers.handleHostDisconnect,
+          };
+
+          const hostNode: Node = {
+            id: `host-${host.id}`,
+            type: 'hostNode',
+            position: {
+              x: nodeState.position.x + 50 + (hostIndex % 2) * 300,
+              y: nodeState.position.y + 200 + Math.floor(hostIndex / 2) * 150,
+            },
+            data: hostNodeData as any,
+            draggable: true,
+            selectable: true,
+            parentId: `group-${group.id}`,
+          };
+
+          nodes.push(hostNode);
+        });
+      }
     });
+
+    return nodes;
   }, [
     project.groups, 
     groupStates, 

@@ -40,6 +40,7 @@ export interface CanvasHandlers {
   handleHostEdit: (host: Host) => void;
   handleHostDelete: (hostId: number) => void;
   handleHostConnect: (hostId: number) => void;
+  handleHostDisconnect: (hostId: number) => void;
   
   // 端口操作
   handlePortEdit: (port: PortForward) => void;

@@ -15,6 +15,7 @@ import {
 
 // 导入自定义节点
 import { GroupNode } from '../nodes/group';
+import { HostNode } from '../nodes/host/HostNode';
 import EmptyProjectNode from '../nodes/EmptyProjectNode';
 
 // 导入模块化组件
@@ -40,6 +41,7 @@ import '@xyflow/react/dist/style.css';
 // 自定义节点类型映射
 const nodeTypes = {
   groupNode: GroupNode,
+  hostNode: HostNode,
   emptyProjectNode: EmptyProjectNode,
 };
 
