@@ -4,9 +4,9 @@ import { AppSidebar } from "~/shared/components/layouts/AppLayout";
 import { AppHeader } from "~/shared/components/layouts/AppLayout/AppHeader";
 import { useLayoutStore } from "~/store/slices/layoutStore";
 import { TabContentRenderer } from "./TabContentRenderer";
-import { MainContentArea } from "./MainContentArea";
-import { useSidebarSelection } from "./useSidebarSelection";
-import { useProjectActions } from "./useProjectActions";
+import { MainContentArea } from "../content/MainContentArea";
+import { useSidebarSelection } from "~/shared/hooks/layout/useSidebarSelection";
+import { useProjectActions } from "~/shared/hooks/business/useProjectActions";
 import { getPageTitle } from "~/shared/utils/pageTitle";
 import type { Project } from "~/shared/types/api";
 
