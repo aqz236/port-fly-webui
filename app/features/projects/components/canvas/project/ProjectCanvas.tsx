@@ -1,4 +1,4 @@
-// 重构后的项目画布组件
+//重构后的项目画布组件
 import { useEffect } from 'react';
 import {
   ReactFlow,
@@ -14,7 +14,7 @@ import {
 } from '@xyflow/react';
 
 // 导入自定义节点
-import GroupNode from '../nodes/GroupNode';
+import { GroupNode } from '../nodes/group';
 import EmptyProjectNode from '../nodes/EmptyProjectNode';
 
 // 导入模块化组件

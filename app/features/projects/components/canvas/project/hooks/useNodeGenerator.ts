@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { Node } from '@xyflow/react';
 import { Project } from '~/shared/types/project';
-import { GroupNodeData } from '../../nodes/GroupNode';
+import { GroupNodeData } from '../../nodes/group';
 import { CanvasHandlers, GroupNodeState } from '../types';
 import { calculateGridLayout, DEFAULT_LAYOUT_CONFIG } from '../utils/layout';
 
