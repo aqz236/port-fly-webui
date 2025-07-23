@@ -14,8 +14,8 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
 } from "~/shared/components/ui/sidebar";
-import type { CreateProjectData } from "~/shared/types/api";
 import { CreateProjectDialog } from "~/features/projects/components";
+import { CreateProjectData } from "~/shared/types/project";
 
 interface ProjectActionsMenuProps {
   onCreateProject?: (data: CreateProjectData) => Promise<void>;

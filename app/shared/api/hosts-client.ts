@@ -1,14 +1,10 @@
 // Hosts API Client
 // 主机管理相关的 API 请求
 
+import { SearchParams } from '../types/base'
+import { Host, CreateHostData, UpdateHostData, HostStats } from '../types/host'
 import { BaseApiClient } from './base-client'
-import type {
-  Host,
-  CreateHostData,
-  UpdateHostData,
-  HostStats,
-  SearchParams
-} from '../types/api'
+
 
 export class HostsApiClient extends BaseApiClient {
   async getHosts(groupId?: number): Promise<Host[]> {

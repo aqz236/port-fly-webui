@@ -10,11 +10,8 @@ import {
 } from '@tanstack/react-query'
 import { apiClient } from '../client'
 import { queryKeys } from './query-keys'
-import type {
-  PortForward,
-  CreatePortForwardData,
-  UpdatePortForwardData
-} from '../../types/api'
+import { CreatePortForwardData, PortForward, UpdatePortForwardData } from '~/shared/types/port-forward'
+
 
 /**
  * 获取端口转发列表 Hook

@@ -2,7 +2,7 @@ import { Button } from "~/shared/components/ui/button"
 import { DashboardPage } from "~/pages"
 import { mockGroups } from "~/shared/utils/mock-data"
 import { useLayoutStore } from "~/store/slices/layoutStore"
-import type { Project } from "~/shared/types/api"
+import { Project } from "~/shared/types/project"
 
 interface MainContentAreaProps {
   projects: Project[]

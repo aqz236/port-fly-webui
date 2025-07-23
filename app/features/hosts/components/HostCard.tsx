@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/sha
 import { Badge } from "~/shared/components/ui/badge";
 import { StatusBadge, StatusType } from "~/shared/components/common/StatusBadge";
 import { ActionButton } from "~/shared/components/common/ActionButton";
-import type { Host } from "~/shared/types/api";
+import { Host } from "~/shared/types/host";
 
 interface HostCardProps {
   host: Host;

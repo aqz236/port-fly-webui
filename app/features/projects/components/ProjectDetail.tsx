@@ -1,4 +1,3 @@
-import { Project, ProjectStats } from "~/shared/types/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/shared/components/ui/card";
 import { Badge } from "~/shared/components/ui/badge";
 import { Button } from "~/shared/components/ui/button";
@@ -16,7 +15,8 @@ import {
   TreePine
 } from "lucide-react";
 import { useState } from "react";
-import { Group } from "~/shared/types/api";
+import { Group } from "~/shared/types/group";
+import { Project, ProjectStats } from "~/shared/types/project";
 
 interface ProjectDetailProps {
   project: Project;

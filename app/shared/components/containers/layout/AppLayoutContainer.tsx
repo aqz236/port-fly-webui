@@ -8,7 +8,7 @@ import { MainContentArea } from "../content/MainContentArea";
 import { useSidebarSelection } from "~/shared/hooks/layout/useSidebarSelection";
 import { useProjectActions } from "~/shared/hooks/business/useProjectActions";
 import { getPageTitle } from "~/shared/utils/pageTitle";
-import type { Project } from "~/shared/types/api";
+import { Project } from "~/shared/types/project";
 
 interface AppLayoutContainerProps {
   projects: Project[];

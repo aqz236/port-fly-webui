@@ -10,11 +10,8 @@ import {
 } from '@tanstack/react-query'
 import { apiClient } from '../client'
 import { queryKeys } from './query-keys'
-import type {
-  Host,
-  CreateHostData,
-  UpdateHostData
-} from '../../types/api'
+import { CreateHostData, Host, UpdateHostData } from '~/shared/types/host'
+
 
 /**
  * 获取主机列表 Hook

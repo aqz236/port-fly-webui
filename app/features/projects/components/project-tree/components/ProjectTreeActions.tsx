@@ -14,8 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/shared/components/ui/dropdown-menu';
-import type { CreateProjectData } from '~/shared/types/api';
 import { CreateProjectDialog } from '../..';
+import { CreateProjectData } from '~/shared/types/project';
 
 interface ProjectTreeActionsProps {
   onCreateProject?: (data: CreateProjectData) => Promise<void>;

@@ -1,14 +1,10 @@
 // Port Forwards API Client
 // 端口转发管理相关的 API 请求
 
+import { SearchParams } from '../types/base'
+import { PortForward, CreatePortForwardData, UpdatePortForwardData, PortForwardStats } from '../types/port-forward'
 import { BaseApiClient } from './base-client'
-import type {
-  PortForward,
-  CreatePortForwardData,
-  UpdatePortForwardData,
-  PortForwardStats,
-  SearchParams
-} from '../types/api'
+
 
 export class PortForwardsApiClient extends BaseApiClient {
   async getPortForwards(groupId?: number): Promise<PortForward[]> {

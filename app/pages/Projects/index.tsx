@@ -1,5 +1,5 @@
 import { ProjectDetail } from "~/features/projects/components/ProjectDetail";
-import type { Project } from "~/shared/types/api";
+import { Project } from "~/shared/types/project";
 
 interface ProjectsPageProps {
   project: Project;

@@ -1,15 +1,9 @@
 // Projects API Client
 // 项目管理相关的 API 请求
 
+import { CreateProjectData, MoveProjectParams, Project, ProjectStats, ProjectTreeNode, UpdateProjectData } from '../types/project';
 import { BaseApiClient } from './base-client'
-import type {
-  Project,
-  CreateProjectData,
-  UpdateProjectData,
-  ProjectStats,
-  ProjectTreeNode,
-  MoveProjectParams
-} from '../types/api'
+
 
 export class ProjectsApiClient extends BaseApiClient {
   async getProjects(params?: {

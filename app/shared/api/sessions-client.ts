@@ -1,13 +1,9 @@
 // Sessions API Client
 // 隧道会话管理相关的 API 请求
 
+import { TunnelSession, CreateTunnelSessionData, UpdateTunnelSessionData, SessionStats } from '../types/session'
 import { BaseApiClient } from './base-client'
-import type {
-  TunnelSession,
-  CreateTunnelSessionData,
-  UpdateTunnelSessionData,
-  SessionStats
-} from '../types/api'
+
 
 export class SessionsApiClient extends BaseApiClient {
   async getTunnelSessions(): Promise<TunnelSession[]> {

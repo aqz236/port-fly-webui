@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from "~/shared/components/ui/alert"
 import { AlertCircle, MoreHorizontal } from "lucide-react"
 import { IconPicker } from "../project-tree/components/IconPicker"
 import { getIconByName, ICON_COLORS } from "../project-tree/utils/icons"
-import type { Project } from "~/shared/types/api"
+import { Project } from "~/shared/types/project"
 
 export interface EditProjectData {
   name: string;

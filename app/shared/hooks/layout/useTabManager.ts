@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import type { Project, Group } from "~/shared/types/api";
+import { Group } from "~/shared/types/group";
+import { Project } from "~/shared/types/project";
 import { mockGroups } from "~/shared/utils/mock-data";
 
 // 标签页相关类型

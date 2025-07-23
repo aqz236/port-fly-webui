@@ -6,8 +6,8 @@
 
 import React from 'react';
 import { ProjectTree, ProjectTreeSection, useProjectTreeState } from '~/features/projects/components/project-tree';
-import type { Project, CreateProjectData, MoveProjectParams } from '~/shared/types/api';
 import type { SelectedItem } from '~/shared/components/layouts/AppLayout/AppSidebar';
+import { Project, CreateProjectData, MoveProjectParams } from '~/shared/types/project';
 
 // 示例项目数据
 const sampleProjects: Project[] = [

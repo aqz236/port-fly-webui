@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import type { Project, Group, GroupStats, ProjectStats } from '~/shared/types/api'
+import { Group, GroupStats } from '~/shared/types/group'
+import { Project, ProjectStats } from '~/shared/types/project'
 
 // 选中项类型
 export interface SelectedItem {

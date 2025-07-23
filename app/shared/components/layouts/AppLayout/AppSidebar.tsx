@@ -2,7 +2,6 @@ import {
   Sidebar,
   SidebarContent,
 } from "~/shared/components/ui/sidebar";
-import type { CreateProjectData, MoveProjectParams, Project } from "~/shared/types/api";
 import type { EditProjectData } from "~/features/projects/components/dialogs/edit-project-dialog";
 import {
   SidebarHeader,
@@ -10,6 +9,7 @@ import {
   SidebarFooter,
   ProjectTreeSection,
 } from "./AppSidebar/index";
+import { Project, CreateProjectData, MoveProjectParams } from "~/shared/types/project";
 
 export type ViewType = 'overview' | 'project' | 'group';
 

@@ -1,5 +1,5 @@
 import type { SelectedItem } from "~/store/slices/layoutStore"
-import type { Project } from "~/shared/types/api"
+import { Project } from "../types/project"
 
 export function getPageTitle(selected: SelectedItem, projects: Project[]): string {
   switch (selected.type) {

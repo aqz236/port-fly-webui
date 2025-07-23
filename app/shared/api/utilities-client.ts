@@ -1,15 +1,8 @@
 // Utilities API Client
 // 批量操作、导入导出、用户偏好等工具相关的 API 请求
 
+import { BulkOperationRequest, BulkOperationResponse, ExportData, ImportResult, UserPreferences, UpdateUserPreferencesData } from '../types/base'
 import { BaseApiClient } from './base-client'
-import type {
-  BulkOperationRequest,
-  BulkOperationResponse,
-  ExportData,
-  ImportResult,
-  UserPreferences,
-  UpdateUserPreferencesData
-} from '../types/api'
 
 export class UtilitiesApiClient extends BaseApiClient {
   // 批量操作

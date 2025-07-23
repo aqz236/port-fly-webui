@@ -1,13 +1,9 @@
 // Groups API Client
 // 组管理相关的 API 请求
 
+import { Group, CreateGroupData, UpdateGroupData, GroupStats } from '../types/group'
 import { BaseApiClient } from './base-client'
-import type {
-  Group,
-  CreateGroupData,
-  UpdateGroupData,
-  GroupStats
-} from '../types/api'
+
 
 export class GroupsApiClient extends BaseApiClient {
   async getGroups(projectId?: number): Promise<Group[]> {

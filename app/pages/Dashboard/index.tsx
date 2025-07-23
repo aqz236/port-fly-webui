@@ -1,7 +1,8 @@
 import { StatCard } from "~/shared/components/common/StatCard";
 import { ProjectList } from "~/features/projects/components";
 import { FolderOpen, Server, Zap, Activity } from "lucide-react";
-import type { Project, Group } from "~/shared/types/api";
+import { Group } from "~/shared/types/group";
+import { Project } from "~/shared/types/project";
 
 interface DashboardPageProps {
   projects: Project[];

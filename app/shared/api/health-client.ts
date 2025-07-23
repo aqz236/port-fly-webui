@@ -1,8 +1,8 @@
 // Health API Client
 // 健康检查相关的 API 请求
 
+import { HealthStatus, SystemStats } from '../types/base'
 import { BaseApiClient } from './base-client'
-import type { HealthStatus, SystemStats } from '../types/api'
 
 export class HealthApiClient extends BaseApiClient {
   async health(): Promise<HealthStatus> {

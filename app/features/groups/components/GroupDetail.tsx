@@ -1,4 +1,3 @@
-import { Group, GroupStats } from "~/shared/types/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/shared/components/ui/card";
 import { Badge } from "~/shared/components/ui/badge";
 import { Button } from "~/shared/components/ui/button";
@@ -13,6 +12,7 @@ import {
   Database
 } from "lucide-react";
 import { useState } from "react";
+import { Group, GroupStats } from "~/shared/types/group";
 
 interface GroupDetailProps {
   group: Group;

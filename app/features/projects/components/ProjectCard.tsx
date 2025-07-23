@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/shared/components/ui/card";
 import { Badge } from "~/shared/components/ui/badge";
-import type { Project } from "~/shared/types/api";
+import { Project } from "~/shared/types/project";
 
 interface ProjectCardProps {
   project: Project;

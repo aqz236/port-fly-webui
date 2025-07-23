@@ -5,10 +5,10 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import type { Project, MoveProjectParams } from '~/shared/types/api';
 import type { ProjectTreeNode, TreeState, MoveNodeParams } from '../core/types';
 import { ProjectTreeAdapter } from '../core/adapter';
 import { TreeOperationsManager } from '../core/operations';
+import { MoveProjectParams, Project } from '~/shared/types/project';
 
 interface UseProjectTreeState {
   projects: Project[];

@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import type { CreateProjectData, MoveProjectParams } from "~/shared/types/api";
 import type { EditProjectData } from "~/features/projects/components/dialogs/edit-project-dialog";
 import { 
   useCreateProject, 
@@ -7,6 +6,7 @@ import {
   useDeleteProject, 
   useMoveProject 
 } from "~/shared/api/hooks";
+import { CreateProjectData, MoveProjectParams } from "~/shared/types/project";
 
 interface UseProjectActionsProps {
   onProjectsUpdate: () => void;

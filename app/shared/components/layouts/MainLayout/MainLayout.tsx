@@ -1,5 +1,5 @@
-import type { Project } from "~/shared/types/api";
 import { AppLayoutContainer } from "~/shared/components/containers";
+import { Project } from "~/shared/types/project";
 
 interface MainLayoutProps {
   projects: Project[];

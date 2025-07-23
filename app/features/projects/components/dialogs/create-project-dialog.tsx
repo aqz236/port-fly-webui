@@ -16,7 +16,7 @@ import { Alert, AlertDescription } from "~/shared/components/ui/alert"
 import { AlertCircle, MoreHorizontal } from "lucide-react"
 import { IconPicker } from "../project-tree/components/IconPicker"
 import { getIconByName, getRandomIcon, getRandomColor, ICON_COLORS } from "../project-tree/utils/icons"
-import type { CreateProjectData } from "~/shared/types/api"
+import { CreateProjectData } from "~/shared/types/project"
 
 interface CreateProjectDialogProps {
   open: boolean

@@ -4,7 +4,7 @@
  * 负责将 Project 数据转换为树组件使用的格式
  */
 
-import type { Project } from "~/shared/types/api";
+import { Project } from "~/shared/types/project";
 import type { TreeDataAdapter, ProjectTreeNode } from "./types";
 
 /**

@@ -10,11 +10,8 @@ import {
 } from '@tanstack/react-query'
 import { apiClient } from '../client'
 import { queryKeys } from './query-keys'
-import type {
-  Group,
-  CreateGroupData,
-  UpdateGroupData
-} from '../../types/api'
+import { CreateGroupData, Group, UpdateGroupData } from '~/shared/types/group'
+
 
 /**
  * 获取组列表 Hook

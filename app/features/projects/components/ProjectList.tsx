@@ -1,4 +1,4 @@
-import { Project } from "~/shared/types/api";
+import { Project } from "~/shared/types/project";
 import { ProjectCard,  } from "./ProjectCard";
 
 interface ProjectListProps {

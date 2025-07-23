@@ -5,7 +5,7 @@
  */
 
 import type { TreeItemIndex, DraggingPosition } from "react-complex-tree";
-import type { Project } from "~/shared/types/api";
+import { Project } from "~/shared/types/project";
 
 // ===== 核心树节点类型 =====
 

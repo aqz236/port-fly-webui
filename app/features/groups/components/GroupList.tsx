@@ -1,4 +1,4 @@
-import { Group } from "~/shared/types/api";
+import { Group } from "~/shared/types/group";
 import { GroupCard,  } from "./GroupCard";
 
 interface GroupListProps {

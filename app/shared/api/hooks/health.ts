@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { apiClient } from '../client'
 import { queryKeys } from './query-keys'
-import type { HealthStatus, SystemStats } from '../../types/api'
+import { HealthStatus, SystemStats } from '~/shared/types/base'
 
 /**
  * 健康检查 Hook

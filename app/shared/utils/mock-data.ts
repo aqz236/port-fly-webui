@@ -1,4 +1,4 @@
-import { Group } from "~/shared/types/api";
+import { Group } from "../types/group";
 
 // 模拟组数据用于测试
 export const mockGroups: Group[] = [

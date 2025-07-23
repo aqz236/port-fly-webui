@@ -11,7 +11,7 @@ import {
 import { Alert, AlertDescription } from "~/shared/components/ui/alert"
 import { AlertTriangle } from "lucide-react"
 import { getIconByName } from "../project-tree/utils/icons"
-import type { Project } from "~/shared/types/api"
+import { Project } from "~/shared/types/project"
 
 interface DeleteProjectDialogProps {
   open: boolean

@@ -10,11 +10,8 @@ import {
 } from '@tanstack/react-query'
 import { apiClient } from '../client'
 import { queryKeys } from './query-keys'
-import type {
-  TunnelSession,
-  CreateTunnelSessionData,
-  SessionStats
-} from '../../types/api'
+import { TunnelSession, CreateTunnelSessionData, SessionStats } from '~/shared/types/session'
+
 
 /**
  * 获取隧道会话列表 Hook

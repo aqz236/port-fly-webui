@@ -11,8 +11,7 @@ import {
   StaticTreeDataProvider,
 } from 'react-complex-tree';
 import { GripVertical, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
-import type { Project, CreateProjectData, MoveProjectParams } from '~/shared/types/api';
-import type { SelectedItem } from '../../../../../shared/components/layouts/AppLayout/AppSidebar';
+import type { SelectedItem } from '~/shared/components/layouts/AppLayout/AppSidebar';
 import { useProjectTreeState } from '../hooks/useProjectTreeState';
 import { useProjectTreeDragDrop } from '../hooks/useProjectTreeDragDrop';
 import { convertToRCTFormat, getNodeTitle, createTreeConfig } from '../utils/tree-utils';
@@ -21,6 +20,7 @@ import { getIconByName } from '../utils/icons';
 import type { EditProjectData } from '~/features/projects/components/dialogs/edit-project-dialog';
 import 'react-complex-tree/lib/style-modern.css';
 import { DeleteProjectDialog, EditProjectDialog } from '../..';
+import { CreateProjectData, MoveProjectParams, Project } from '~/shared/types/project';
 
 export interface ProjectTreeProps {
   /** 项目数据 */

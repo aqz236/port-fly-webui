@@ -10,13 +10,8 @@ import {
 } from '@tanstack/react-query'
 import { apiClient } from '../client'
 import { queryKeys } from './query-keys'
-import type {
-  Project,
-  CreateProjectData,
-  UpdateProjectData,
-  MoveProjectParams,
-  ProjectStats
-} from '../../types/api'
+import { CreateProjectData, MoveProjectParams, Project, ProjectStats, UpdateProjectData } from '~/shared/types/project';
+
 
 /**
  * 获取项目列表 Hook

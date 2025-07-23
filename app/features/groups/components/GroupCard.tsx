@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/shared/components/ui/card";
 import { Badge } from "~/shared/components/ui/badge";
 import { Server, Zap } from "lucide-react";
-import type { Group } from "~/shared/types/api";
+import { Group } from "~/shared/types/group";
 
 interface GroupCardProps {
   group: Group;
