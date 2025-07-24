@@ -8,6 +8,7 @@ import { Project, ProjectStats } from "~/shared/types/project";
 import { Group } from "~/shared/types/group";
 import { Host } from "~/shared/types/host";
 import { PortForward } from "~/shared/types/port-forward";
+import { Port, PortType } from "~/shared/types/port";
 
 import { ProjectCanvas } from "./canvas";
 
@@ -24,7 +25,9 @@ interface ResourceViewerProps {
   onDeleteHost: (id: number) => void;
   onConnectHost: (hostId: number) => void;
   onCreatePort: (groupId: number, hostId?: number) => void;
+  onCreatePortV2?: (groupId: number, portType: PortType) => void;
   onEditPort: (port: PortForward) => void;
+  onEditPortV2?: (port: Port) => void;
   onDeletePort: (id: number) => void;
   onTogglePort: (portId: number) => void;
 }
@@ -40,7 +43,9 @@ export function ResourceViewer({
   onDeleteHost,
   onConnectHost,
   onCreatePort,
+  onCreatePortV2,
   onEditPort,
+  onEditPortV2,
   onDeletePort,
   onTogglePort,
 }: ResourceViewerProps) {
@@ -131,7 +136,9 @@ export function ResourceViewer({
               onDeleteHost={onDeleteHost}
               onConnectHost={onConnectHost}
               onCreatePort={onCreatePort}
+              onCreatePortV2={onCreatePortV2}
               onEditPort={onEditPort}
+              onEditPortV2={onEditPortV2}
               onDeletePort={onDeletePort}
               onTogglePort={onTogglePort}
             />

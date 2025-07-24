@@ -1,4 +1,4 @@
-//重构后的项目画布组件 - 新架构版本
+//重构后的项目画布组件
 import { useEffect } from 'react';
 import {
   ReactFlow,
@@ -17,6 +17,8 @@ import {
 import { HostNode } from '../nodes/host/HostNode';
 import { HostNodeV2 } from '../nodes/host_v2';
 import EmptyProjectNode from '../nodes/EmptyProjectNode';
+import { LocalPortNodeV2 } from '../nodes/local_port_v2';
+import { RemotePortNodeV2 } from '../nodes/remote_port_v2';
 
 // 导入节点管理器
 import { useNodeManagerStore, NodeManagerDialog } from '../nodes/manager';
@@ -39,11 +41,13 @@ import { ProjectCanvasProps } from './types';
 // 导入样式
 import '@xyflow/react/dist/style.css';
 
-// 自定义节点类型映射 - 移除 groupNode
+// 自定义节点类型映射
 const nodeTypes = {
   hostNode: HostNode,
   hostV2: HostNodeV2,
   emptyProjectNode: EmptyProjectNode,
+  localPortV2: LocalPortNodeV2,
+  remotePortV2: RemotePortNodeV2,
 };
 
 // 扩展的件属性，包含创建画布的功能
@@ -52,7 +56,7 @@ interface ExtendedProjectCanvasProps extends ProjectCanvasProps {
 }
 
 /**
- * 项目画布核心组件 - 新架构
+ * 项目画布核心组件
  */
 function ProjectCanvasCore({ project, onCreateGroup, ...handlers }: ExtendedProjectCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[]);
@@ -246,6 +250,18 @@ function ProjectCanvasCore({ project, onCreateGroup, ...handlers }: ExtendedProj
         // 调用创建主机的回调，这会触发后端API并刷新数据
         console.log('调用创建主机API，groupId:', targetGroupId);
         handlers.onCreateHost?.(targetGroupId);
+        break;
+
+      case 'localPortV2':
+        // 创建本地端口节点
+        console.log('调用创建本地端口API，groupId:', targetGroupId);
+        handlers.onCreatePortV2?.(targetGroupId, 'local');
+        break;
+
+      case 'remotePortV2':
+        // 创建远程端口节点
+        console.log('调用创建远程端口API，groupId:', targetGroupId);
+        handlers.onCreatePortV2?.(targetGroupId, 'remote');
         break;
         
       case 'emptyProjectNode':

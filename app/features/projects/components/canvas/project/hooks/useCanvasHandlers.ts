@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Group } from '~/shared/types/group';
 import { Host } from '~/shared/types/host';
 import { PortForward } from '~/shared/types/port-forward';
+import { Port, PortType } from '~/shared/types/port';
 import { ProjectCanvasProps, CanvasHandlers } from '../types';
 
 /**
@@ -16,10 +17,12 @@ export function useCanvasHandlers(props: ProjectCanvasProps): CanvasHandlers {
   const {
     onCreateHost,
     onCreatePort,
+    onCreatePortV2,
     onEditHost,
     onDeleteHost,
     onConnectHost,
     onEditPort,
+    onEditPortV2,
     onDeletePort,
     onTogglePort,
   } = props;
@@ -32,6 +35,10 @@ export function useCanvasHandlers(props: ProjectCanvasProps): CanvasHandlers {
   const handleAddPort = useCallback((groupId: number) => {
     onCreatePort?.(groupId);
   }, [onCreatePort]);
+
+  const handleAddPortV2 = useCallback((groupId: number, portType: PortType) => {
+    onCreatePortV2?.(groupId, portType);
+  }, [onCreatePortV2]);
 
   // 主机操作处理器
   const handleHostEdit = useCallback((host: Host) => {
@@ -151,6 +158,8 @@ export function useCanvasHandlers(props: ProjectCanvasProps): CanvasHandlers {
   return useMemo(() => ({
     handleAddHost,
     handleAddPort,
+    handleAddPortV2,
+    onCreatePortV2,
     handleHostEdit,
     handleHostDelete,
     handleHostConnect,
@@ -161,6 +170,8 @@ export function useCanvasHandlers(props: ProjectCanvasProps): CanvasHandlers {
   }), [
     handleAddHost,
     handleAddPort,
+    handleAddPortV2,
+    onCreatePortV2,
     handleHostEdit,
     handleHostDelete,
     handleHostConnect,
