@@ -1,6 +1,5 @@
 import { BaseEntity } from "../base";
 import { Host } from "../host";
-import { PortForward } from "../port-forward";
 import { WebSocketMessage } from "../websocket";
 
 // 隧道会话
@@ -13,7 +12,6 @@ export interface TunnelSession extends BaseEntity {
   host_id: number;
   port_forward_id: number;
   host?: Host;
-  port_forward?: PortForward;
   pid?: number; // 进程ID
   local_address?: string;
   remote_address?: string;

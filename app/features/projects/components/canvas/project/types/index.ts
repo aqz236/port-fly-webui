@@ -2,8 +2,6 @@
 import { Project } from '~/shared/types/project';
 import { Group } from '~/shared/types/group';
 import { Host } from '~/shared/types/host';
-import { PortForward } from '~/shared/types/port-forward';
-import { Port, PortType } from '~/shared/types/port';
 
 // 项目画布属性接口
 export interface ProjectCanvasProps {
@@ -13,9 +11,6 @@ export interface ProjectCanvasProps {
   onDeleteHost?: (hostId: number) => void;
   onConnectHost?: (hostId: number) => void;
   onCreatePort?: (groupId: number, hostId?: number) => void;
-  onCreatePortV2?: (groupId: number, portType: PortType) => void;
-  onEditPort?: (port: PortForward) => void;
-  onEditPortV2?: (port: Port) => void;
   onDeletePort?: (portId: number) => void;
   onTogglePort?: (portId: number) => void;
 }
@@ -37,14 +32,6 @@ export interface CanvasHandlers {
   handleHostConnect: (hostId: number) => void;
   handleHostDisconnect: (hostId: number) => void;
   
-  // 端口操作
-  handlePortEdit: (port: PortForward) => void;
-  handlePortDelete: (portId: number) => void;
-  handlePortToggle: (portId: number) => void;
-
-  // 新增的V2端口操作
-  handleAddPortV2?: (groupId: number, portType: PortType) => void;
-  onCreatePortV2?: (groupId: number, portType: PortType) => void;
 }
 
 // 布局数据导出格式

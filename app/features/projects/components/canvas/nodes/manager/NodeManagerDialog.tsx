@@ -103,8 +103,17 @@ function NodeCard({
 
   return (
     <Card 
-      className="cursor-pointer hover:shadow-md transition-shadow"
+      className="cursor-pointer hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-ring"
       onClick={() => onSelect(config)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(config);
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`选择 ${config.displayName} 节点`}
     >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
@@ -189,6 +198,8 @@ function CreateNodePanel({
           value={filters.searchTerm}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           className="pl-10"
+          autoFocus={false}
+          tabIndex={0}
         />
       </div>
 
@@ -276,6 +287,8 @@ function ManageNodesPanel() {
           value={searchTerm}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           className="pl-10"
+          autoFocus={false}
+          tabIndex={0}
         />
       </div>
 
@@ -447,40 +460,68 @@ export function NodeManagerDialog({
   onOpenChange,
   onNodeCreate
 }: NodeManagerDialogProps) {
+  // 当对话框关闭时重置状态
+  const handleOpenChange = (newOpen: boolean) => {
+    onOpenChange(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+    <Dialog open={open} onOpenChange={handleOpenChange} modal>
+      <DialogContent 
+        className="max-w-4xl max-h-[80vh] overflow-hidden focus:outline-none"
+        onInteractOutside={(e) => {
+          // 允许点击外部关闭，但确保焦点管理正确
+          e.preventDefault();
+          handleOpenChange(false);
+        }}
+        aria-labelledby="node-manager-title"
+        aria-describedby="node-manager-description"
+      >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle id="node-manager-title" className="flex items-center gap-2">
             <Grid className="w-5 h-5" />
             节点管理器
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="node-manager-description">
             创建、管理和配置画布节点
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs defaultValue="create" className="flex-1 overflow-hidden">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="create">创建节点</TabsTrigger>
-            <TabsTrigger value="manage">管理节点</TabsTrigger>
-            <TabsTrigger value="stats">统计信息</TabsTrigger>
-          </TabsList>
-          
-          <div className="mt-4 overflow-auto">
-            <TabsContent value="create" className="mt-0">
-              <CreateNodePanel onNodeCreate={onNodeCreate} />
-            </TabsContent>
+        <div className="flex-1 overflow-hidden">
+          <Tabs defaultValue="create" className="w-full h-full flex flex-col">
+            <TabsList className="grid w-full grid-cols-3 flex-shrink-0">
+              <TabsTrigger value="create">创建节点</TabsTrigger>
+              <TabsTrigger value="manage">管理节点</TabsTrigger>
+              <TabsTrigger value="stats">统计信息</TabsTrigger>
+            </TabsList>
             
-            <TabsContent value="manage" className="mt-0">
-              <ManageNodesPanel />
-            </TabsContent>
-            
-            <TabsContent value="stats" className="mt-0">
-              <StatsPanel />
-            </TabsContent>
-          </div>
-        </Tabs>
+            <div className="mt-4 overflow-auto flex-1">
+              <TabsContent 
+                value="create" 
+                className="mt-0 h-full focus:outline-none"
+                tabIndex={-1}
+              >
+                <CreateNodePanel onNodeCreate={onNodeCreate} />
+              </TabsContent>
+              
+              <TabsContent 
+                value="manage" 
+                className="mt-0 h-full focus:outline-none"
+                tabIndex={-1}
+              >
+                <ManageNodesPanel />
+              </TabsContent>
+              
+              <TabsContent 
+                value="stats" 
+                className="mt-0 h-full focus:outline-none"
+                tabIndex={-1}
+              >
+                <StatsPanel />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
       </DialogContent>
     </Dialog>
   );

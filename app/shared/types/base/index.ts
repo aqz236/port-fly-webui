@@ -2,7 +2,6 @@
 
 import { Group } from "../group";
 import { Host } from "../host";
-import { PortForward } from "../port-forward";
 import { Project } from "../project";
 import { WebSocketMessage } from "../websocket";
 
@@ -125,7 +124,6 @@ export interface ExportData {
   projects: Project[];
   groups: Group[];
   hosts: Host[];
-  port_forwards: PortForward[];
 }
 
 export interface ImportResult {

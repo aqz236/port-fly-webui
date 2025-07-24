@@ -6,7 +6,6 @@ import { DialogState } from "../hooks/useResourceDialog";
 import { Host } from "~/shared/types/host";
 import { CreateGroupData, UpdateGroupData } from "~/shared/types/group";
 import { CreateHostData, UpdateHostData } from "~/shared/types/host";
-import { CreatePortForwardData, UpdatePortForwardData } from "~/shared/types/port-forward";
 
 interface ResourceDialogsProps {
   dialogState: DialogState;
@@ -14,10 +13,8 @@ interface ResourceDialogsProps {
   onCloseDialog: () => void;
   onSaveGroup: (data: CreateGroupData | UpdateGroupData) => Promise<void>;
   onSaveHost: (data: CreateHostData | UpdateHostData) => Promise<void>;
-  onSavePortForward: (data: CreatePortForwardData | UpdatePortForwardData) => Promise<void>;
   groupLoading: boolean;
   hostLoading: boolean;
-  portLoading: boolean;
 }
 
 export function ResourceDialogs({
@@ -26,10 +23,8 @@ export function ResourceDialogs({
   onCloseDialog,
   onSaveGroup,
   onSaveHost,
-  onSavePortForward,
   groupLoading,
   hostLoading,
-  portLoading
 }: ResourceDialogsProps) {
   
   return (
@@ -57,18 +52,6 @@ export function ResourceDialogs({
         />
       )}
 
-      {dialogState.type === 'port' && dialogState.groupId && (
-        <PortForwardDialog
-          open={true}
-          onOpenChange={onCloseDialog}
-          portForward={dialogState.mode === 'edit' ? dialogState.data : undefined}
-          groupId={dialogState.groupId}
-          hostId={dialogState.hostId}
-          hosts={hosts.filter(host => host.group_id === dialogState.groupId)}
-          onSave={onSavePortForward}
-          loading={portLoading}
-        />
-      )}
     </>
   );
 }

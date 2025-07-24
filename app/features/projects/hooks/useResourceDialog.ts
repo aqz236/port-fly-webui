@@ -2,7 +2,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { Group } from "~/shared/types/group";
 import { Host } from "~/shared/types/host";
-import { PortForward } from "~/shared/types/port-forward";
 
 export interface DialogState {
   type: 'group' | 'host' | 'port' | null;
@@ -53,13 +52,8 @@ export function useResourceDialog() {
     openDialog('host', 'edit', host, undefined, host.group_id, host.id);
   }, [openDialog]);
 
-  const openCreatePortDialog = useCallback((groupId: number, hostId?: number) => {
-    openDialog('port', 'create', {}, undefined, groupId, hostId);
-  }, [openDialog]);
 
-  const openEditPortDialog = useCallback((port: PortForward) => {
-    openDialog('port', 'edit', port, undefined, port.group_id, port.host_id);
-  }, [openDialog]);
+
 
   return {
     dialogState,
@@ -69,7 +63,5 @@ export function useResourceDialog() {
     openEditGroupDialog,
     openCreateHostDialog,
     openEditHostDialog,
-    openCreatePortDialog,
-    openEditPortDialog,
   };
 }

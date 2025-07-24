@@ -8,7 +8,6 @@ import { HealthApiClient } from './health-client'
 import { ProjectsApiClient } from './projects-client'
 import { GroupsApiClient } from './groups-client'
 import { HostsApiClient } from './hosts-client'
-import { PortForwardsApiClient } from './port-forwards-client'
 import { SessionsApiClient } from './sessions-client'
 import { UtilitiesApiClient } from './utilities-client'
 
@@ -30,7 +29,6 @@ export class ApiClient extends BaseApiClient {
   public readonly projects: ProjectsApiClient
   public readonly groups: GroupsApiClient
   public readonly hosts: HostsApiClient
-  public readonly portForwards: PortForwardsApiClient
   public readonly sessions: SessionsApiClient
   public readonly utilities: UtilitiesApiClient
 
@@ -42,7 +40,6 @@ export class ApiClient extends BaseApiClient {
     this.projects = new ProjectsApiClient(this.config)
     this.groups = new GroupsApiClient(this.config)
     this.hosts = new HostsApiClient(this.config)
-    this.portForwards = new PortForwardsApiClient(this.config)
     this.sessions = new SessionsApiClient(this.config)
     this.utilities = new UtilitiesApiClient(this.config)
   }

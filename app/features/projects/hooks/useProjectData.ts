@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { Project } from "~/shared/types/project";
 import { useGroups } from "~/shared/api/hooks/groups";
 import { useHosts } from "~/shared/api/hooks/hosts";
-import { usePortForwards } from "~/shared/api/hooks/port-forwards";
 import { useResourceStore } from "~/store/slices/resourceStore";
 
 export function useProjectData(project: Project) {
@@ -21,7 +20,6 @@ export function useProjectData(project: Project) {
   // API queries
   const { data: apiGroups = [], refetch: refetchGroups } = useGroups(project.id);
   const { data: apiHosts = [], refetch: refetchHosts } = useHosts();
-  const { data: apiPortForwards = [], refetch: refetchPortForwards } = usePortForwards();
 
   // 初始化数据到 store
   useEffect(() => {
@@ -42,11 +40,7 @@ export function useProjectData(project: Project) {
     }
   }, [apiHosts]);
 
-  useEffect(() => {
-    if (apiPortForwards && apiPortForwards.length >= 0 && JSON.stringify(apiPortForwards) !== JSON.stringify(portForwards)) {
-      setPortForwards(apiPortForwards);
-    }
-  }, [apiPortForwards]);
+
 
   // 构建带有资源数据的项目对象
   const projectWithData = {
@@ -65,6 +59,5 @@ export function useProjectData(project: Project) {
     portForwards,
     refetchGroups,
     refetchHosts,
-    refetchPortForwards
   };
 }
