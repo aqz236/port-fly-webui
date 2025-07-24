@@ -1,4 +1,4 @@
-// ResourceViewer.tsx - 资源查看器组件
+// ResourceViewer.tsx - 资源查看器组件 - 新架构版本
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/shared/components/ui/card";
 import { Button } from "~/shared/components/ui/button";
@@ -29,8 +29,8 @@ interface ResourceViewerProps {
   onTogglePort: (portId: number) => void;
 }
 
-export function ResourceViewer({ 
-  project, 
+export function ResourceViewer({
+  project,
   stats,
   onCreateGroup,
   onEditGroup,
@@ -42,91 +42,90 @@ export function ResourceViewer({
   onCreatePort,
   onEditPort,
   onDeletePort,
-  onTogglePort
+  onTogglePort,
 }: ResourceViewerProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('canvas');
 
+  // 计算统计数据
+  const groupCount = project.groups?.length || 0;
+  const hostCount = project.groups?.reduce((total, group) => total + (group.hosts?.length || 0), 0) || 0;
+  const portCount = project.groups?.reduce((total, group) => total + (group.port_forwards?.length || 0), 0) || 0;
+
+  const viewModeConfig = {
+    canvas: { icon: Layers3, label: '画布视图', description: '可视化的画布界面' },
+    list: { icon: List, label: '列表视图', description: '传统的列表界面' },
+    grid: { icon: Grid3X3, label: '网格视图', description: '卡片式网格界面' },
+  };
+
   return (
-    <Card className="h-full flex flex-col border-[0]">
-      <CardHeader className="p-2 px-5">
+    <Card className="w-full h-full flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>资源管理</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Folder className="w-5 h-5" />
+              {project.name} - 资源管理
+            </CardTitle>
             <CardDescription>
-              可视化管理项目中的组、主机和端口转发
+              管理项目中的画布、主机和端口转发配置
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            {/* 紧凑统计信息 */}
-            {/* {stats && (
-              <div className="flex items-center gap-3 mr-4">
-                <Badge variant="outline" className="text-xs">
-                  <Folder className="h-3 w-3 mr-1" />
-                  {stats.total_groups}组
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  <Server className="h-3 w-3 mr-1" />
-                  {stats.total_hosts}主机
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  <Users className="h-3 w-3 mr-1" />
-                  {stats.total_ports}端口
-                </Badge>
-                <Badge variant={stats.active_tunnels > 0 ? "default" : "secondary"} className="text-xs">
-                  <Activity className="h-3 w-3 mr-1" />
-                  {stats.active_tunnels}活跃
-                </Badge>
-              </div>
-            )} */}
-            
-            {/* 视图切换 */}
-            <div className="flex items-center bg-muted rounded-lg p-1">
-              <Button
-                variant={viewMode === 'canvas' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('canvas')}
-                className="h-8"
-              >
-                <Layers3 className="h-4 w-4 mr-1" />
-                画布
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="h-8"
-              >
-                <List className="h-4 w-4 mr-1" />
-                列表
-              </Button>
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="h-8"
-              >
-                <Grid3X3 className="h-4 w-4 mr-1" />
-                网格
-              </Button>
-            </div>
-            
-            {/* 快速创建按钮 */}
             <Button onClick={() => onCreateGroup(project.id)} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              创建组
+              <Plus className="w-4 h-4 mr-2" />
+              新建画布
             </Button>
           </div>
         </div>
+
+        {/* 统计信息 */}
+        <div className="flex items-center gap-4 mt-4">
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="flex items-center gap-1">
+              <Folder className="w-3 h-3" />
+              {groupCount} 画布
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="flex items-center gap-1">
+              <Server className="w-3 h-3" />
+              {hostCount} 主机
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="flex items-center gap-1">
+              <Activity className="w-3 h-3" />
+              {portCount} 端口转发
+            </Badge>
+          </div>
+        </div>
+
+        {/* 视图模式切换 */}
+        <div className="flex items-center gap-2 mt-4">
+          {Object.entries(viewModeConfig).map(([mode, config]) => {
+            const Icon = config.icon;
+            return (
+              <Button
+                key={mode}
+                variant={viewMode === mode ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode(mode as ViewMode)}
+                className="flex items-center gap-2"
+              >
+                <Icon className="w-4 h-4" />
+                {config.label}
+              </Button>
+            );
+          })}
+        </div>
       </CardHeader>
       
-      <CardContent className="h-full">
+      <CardContent className="h-full flex-1 min-h-0">
         {viewMode === 'canvas' && (
           <div className="h-full border-t">
             <ProjectCanvas
               project={project}
               onCreateGroup={onCreateGroup}
-              onEditGroup={onEditGroup}
-              onDeleteGroup={onDeleteGroup}
               onCreateHost={onCreateHost}
               onEditHost={onEditHost}
               onDeleteHost={onDeleteHost}
@@ -142,7 +141,9 @@ export function ResourceViewer({
         {viewMode === 'list' && (
           <div className="p-6">
             <div className="text-center text-muted-foreground">
-              列表视图开发中...
+              <List className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <h3 className="text-lg font-medium mb-2">列表视图</h3>
+              <p>传统的层级列表视图正在开发中...</p>
             </div>
           </div>
         )}
@@ -150,7 +151,9 @@ export function ResourceViewer({
         {viewMode === 'grid' && (
           <div className="p-6">
             <div className="text-center text-muted-foreground">
-              网格视图开发中...
+              <Grid3X3 className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <h3 className="text-lg font-medium mb-2">网格视图</h3>
+              <p>卡片式网格视图正在开发中...</p>
             </div>
           </div>
         )}

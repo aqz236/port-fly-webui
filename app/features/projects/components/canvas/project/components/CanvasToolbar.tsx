@@ -9,7 +9,8 @@ import {
   Upload,
   Circle,
   Grid3X3,
-  TreePine
+  TreePine,
+  Settings
 } from 'lucide-react';
 
 interface CanvasToolbarProps {
@@ -20,6 +21,7 @@ interface CanvasToolbarProps {
   onFitView: () => void;
   onExportLayout: () => void;
   onImportLayout: () => void;
+  onOpenNodeManager?: () => void;
 }
 
 export function CanvasToolbar({
@@ -30,6 +32,7 @@ export function CanvasToolbar({
   onFitView,
   onExportLayout,
   onImportLayout,
+  onOpenNodeManager,
 }: CanvasToolbarProps) {
   return (
     <>
@@ -39,28 +42,39 @@ export function CanvasToolbar({
           variant="outline"
           size="sm"
           onClick={onCreateGroup}
-          title="创建新组"
+          title="创建新画布"
         >
           <Plus className="h-4 w-4 mr-2" />
-          创建组
+          创建画布
         </Button>
         
-        <div className="flex gap-1 bg-background border rounded-md p-1">
+        {onOpenNodeManager && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onOpenNodeManager}
+            title="节点管理器"
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            节点管理
+          </Button>
+        )}
+
+        {/* 布局按钮组 */}
+        {/* <div className="flex gap-1 border rounded-md p-1">
           <Button
             variant="ghost"
             size="sm"
             onClick={onAutoLayout}
-            title="自动网格布局"
-            className="h-8 px-2"
+            title="自动布局"
           >
-            <LayoutGrid className="h-4 w-4" />
+            <TreePine className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={onGridLayout}
             title="网格布局"
-            className="h-8 px-2"
           >
             <Grid3X3 className="h-4 w-4" />
           </Button>
@@ -68,13 +82,11 @@ export function CanvasToolbar({
             variant="ghost"
             size="sm"
             onClick={onCircularLayout}
-            title="圆形布局"
-            className="h-8 px-2"
+            title="环形布局"
           >
             <Circle className="h-4 w-4" />
           </Button>
-        </div>
-        
+        </div> */}
         <Button
           variant="outline"
           size="sm"

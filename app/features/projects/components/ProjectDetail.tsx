@@ -1,4 +1,4 @@
-// ProjectDetail 组件 v3 - 重构后的清晰架构
+// ProjectDetail 组件 - 新架构版本
 import { useCallback } from "react";
 import { Project, ProjectStats } from "~/shared/types/project";
 import { Group, CreateGroupData, UpdateGroupData } from "~/shared/types/group";
@@ -54,38 +54,43 @@ export function ProjectDetail({ project, stats, onGroupClick }: ProjectDetailPro
     openEditPortDialog,
   } = useResourceDialog();
 
-
-
   // Resource event handlers
   const handleCreateGroupClick = useCallback((projectId: number) => {
     openCreateGroupDialog(projectId);
   }, [openCreateGroupDialog]);
 
-  const handleDeleteNode = useCallback(async (nodeType: string, nodeId: number) => {
-    if (!confirm(`确定要删除这个${nodeType === 'group' ? '组' : nodeType === 'host' ? '主机' : '端口转发'}吗？`)) {
+  const handleDeleteResource = useCallback(async (resourceType: string, resourceId: number) => {
+    const resourceNames = {
+      'group': '画布',
+      'host': '主机',
+      'port': '端口转发'
+    };
+    
+    const resourceName = resourceNames[resourceType as keyof typeof resourceNames] || resourceType;
+    
+    if (!confirm(`确定要删除这个${resourceName}吗？`)) {
       return;
     }
 
     try {
-      switch (nodeType) {
+      switch (resourceType) {
         case 'group':
-          await handleDeleteGroup(nodeId, refetchGroups);
+          await handleDeleteGroup(resourceId, refetchGroups);
           break;
         case 'host':
-          await handleDeleteHost(nodeId, refetchHosts);
+          await handleDeleteHost(resourceId, refetchHosts);
           break;
         case 'port':
-          await handleDeletePortForward(nodeId, refetchPortForwards);
+          await handleDeletePortForward(resourceId, refetchPortForwards);
           break;
+        default:
+          console.warn(`未知的资源类型: ${resourceType}`);
       }
     } catch (error) {
-      console.error('删除失败:', error);
+      console.error(`删除${resourceName}失败:`, error);
     }
   }, [handleDeleteGroup, handleDeleteHost, handleDeletePortForward, refetchGroups, refetchHosts, refetchPortForwards]);
 
-  
-  
-  
   // Dialog save handlers
   const handleSaveGroup = useCallback(async (data: CreateGroupData | UpdateGroupData) => {
     try {
@@ -96,7 +101,7 @@ export function ProjectDetail({ project, stats, onGroupClick }: ProjectDetailPro
       }
       closeDialog();
     } catch (error) {
-      console.error('保存组失败:', error);
+      console.error('保存画布失败:', error);
     }
   }, [dialogState, handleCreateGroup, handleUpdateGroup, refetchGroups, closeDialog]);
 
@@ -129,6 +134,7 @@ export function ProjectDetail({ project, stats, onGroupClick }: ProjectDetailPro
   return (
     <div className="w-full h-full">
       {/* 项目头部信息 */}
+      {/* <ProjectHeader project={projectWithData} stats={stats} /> */}
 
       {/* 资源管理器 */}
       <ResourceViewer
@@ -136,14 +142,14 @@ export function ProjectDetail({ project, stats, onGroupClick }: ProjectDetailPro
         stats={stats}
         onCreateGroup={handleCreateGroupClick}
         onEditGroup={openEditGroupDialog}
-        onDeleteGroup={(id) => handleDeleteNode('group', id)}
+        onDeleteGroup={(id) => handleDeleteResource('group', id)}
         onCreateHost={openCreateHostDialog}
         onEditHost={openEditHostDialog}
-        onDeleteHost={(id) => handleDeleteNode('host', id)}
+        onDeleteHost={(id) => handleDeleteResource('host', id)}
         onConnectHost={handleConnectHost}
         onCreatePort={openCreatePortDialog}
         onEditPort={openEditPortDialog}
-        onDeletePort={(id) => handleDeleteNode('port', id)}
+        onDeletePort={(id) => handleDeleteResource('port', id)}
         onTogglePort={handleStartPortForward}
       />
 

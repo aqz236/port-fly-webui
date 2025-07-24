@@ -1,24 +1,55 @@
-// 数据导入导出相关的工具函数
-import { GroupNodeState, LayoutExportData } from '../types';
+// 数据导入导出相关的工具函数 - 新架构版本
+import { Node, Edge } from '@xyflow/react';
 
-const LAYOUT_VERSION = '1.0.0';
+const LAYOUT_VERSION = '2.0.0';
+
+/**
+ * 布局导出数据接口
+ */
+interface LayoutExportData {
+  projectId: number;
+  nodes: Node[];
+  edges: Edge[];
+  timestamp: string;
+  version: string;
+  metadata?: {
+    projectName?: string;
+    nodeCount: number;
+    edgeCount: number;
+  };
+}
+
+/**
+ * 文件名净化函数
+ */
+function sanitizeFilename(filename: string): string {
+  return filename.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+}
 
 /**
  * 导出布局数据
  * @param projectId 项目ID
  * @param projectName 项目名称
- * @param groupStates 组状态
+ * @param nodes ReactFlow 节点数组
+ * @param edges ReactFlow 边数组
  */
 export function exportLayoutData(
   projectId: number,
   projectName: string,
-  groupStates: GroupNodeState
+  nodes: Node[],
+  edges: Edge[] = []
 ): void {
   const layoutData: LayoutExportData = {
     projectId,
-    groupStates,
+    nodes,
+    edges,
     timestamp: new Date().toISOString(),
     version: LAYOUT_VERSION,
+    metadata: {
+      projectName,
+      nodeCount: nodes.length,
+      edgeCount: edges.length,
+    },
   };
   
   const dataStr = JSON.stringify(layoutData, null, 2);
@@ -27,7 +58,7 @@ export function exportLayoutData(
   
   const link = document.createElement('a');
   link.href = url;
-  link.download = `${sanitizeFilename(projectName)}-layout.json`;
+  link.download = `${sanitizeFilename(projectName)}-layout-v2.json`;
   link.click();
   
   URL.revokeObjectURL(url);
@@ -39,7 +70,7 @@ export function exportLayoutData(
  * @param onError 错误回调
  */
 export function importLayoutData(
-  onSuccess: (groupStates: GroupNodeState) => void,
+  onSuccess: (nodes: Node[], edges: Edge[]) => void,
   onError?: (error: string) => void
 ): void {
   const input = document.createElement('input');
@@ -51,28 +82,26 @@ export function importLayoutData(
     if (!file) return;
     
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = (event) => {
       try {
-        const result = e.target?.result as string;
-        const layoutData = JSON.parse(result) as LayoutExportData;
+        const data = JSON.parse(event.target?.result as string) as LayoutExportData;
         
         // 验证数据格式
-        if (!validateLayoutData(layoutData)) {
+        if (!validateLayoutData(data)) {
           throw new Error('无效的布局数据格式');
         }
         
-        onSuccess(layoutData.groupStates);
+        // 向后兼容性检查
+        if (data.version === '1.0.0') {
+          onError?.('这是旧版本的布局文件，请使用新架构重新导出');
+          return;
+        }
+        
+        onSuccess(data.nodes, data.edges);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : '导入布局失败';
-        console.error('导入布局失败:', error);
+        const errorMessage = error instanceof Error ? error.message : '导入失败';
         onError?.(errorMessage);
       }
-    };
-    
-    reader.onerror = () => {
-      const errorMessage = '读取文件失败';
-      console.error(errorMessage);
-      onError?.(errorMessage);
     };
     
     reader.readAsText(file);
@@ -82,48 +111,82 @@ export function importLayoutData(
 }
 
 /**
- * 验证布局数据格式
- * @param data 布局数据
- * @returns 是否有效
+ * 验证布局数据
  */
 function validateLayoutData(data: any): data is LayoutExportData {
   return (
     data &&
-    typeof data === 'object' &&
     typeof data.projectId === 'number' &&
-    typeof data.groupStates === 'object' &&
-    typeof data.timestamp === 'string'
+    Array.isArray(data.nodes) &&
+    Array.isArray(data.edges) &&
+    typeof data.timestamp === 'string' &&
+    typeof data.version === 'string'
   );
 }
 
 /**
- * 清理文件名，移除不安全字符
- * @param filename 原始文件名
- * @returns 清理后的文件名
+ * 导出节点位置数据（轻量级）
  */
-function sanitizeFilename(filename: string): string {
-  return filename
-    .replace(/[^a-zA-Z0-9\u4e00-\u9fa5\-_\.]/g, '_')
-    .replace(/_{2,}/g, '_')
-    .trim();
+export function exportNodePositions(
+  projectId: number,
+  projectName: string,
+  nodes: Node[]
+): void {
+  const positionData = {
+    projectId,
+    positions: nodes.reduce((acc, node) => {
+      acc[node.id] = node.position;
+      return acc;
+    }, {} as Record<string, { x: number; y: number }>),
+    timestamp: new Date().toISOString(),
+    version: LAYOUT_VERSION,
+  };
+  
+  const dataStr = JSON.stringify(positionData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${sanitizeFilename(projectName)}-positions.json`;
+  link.click();
+  
+  URL.revokeObjectURL(url);
 }
 
 /**
- * 获取布局数据的统计信息
- * @param groupStates 组状态
- * @returns 统计信息
+ * 导入节点位置数据
  */
-export function getLayoutStats(groupStates: GroupNodeState): {
-  totalGroups: number;
-  expandedGroups: number;
-  collapsedGroups: number;
-} {
-  const groups = Object.values(groupStates);
-  const expandedGroups = groups.filter(g => g.isExpanded).length;
+export function importNodePositions(
+  onSuccess: (positions: Record<string, { x: number; y: number }>) => void,
+  onError?: (error: string) => void
+): void {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
   
-  return {
-    totalGroups: groups.length,
-    expandedGroups,
-    collapsedGroups: groups.length - expandedGroups,
+  input.onchange = (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target?.result as string);
+        
+        if (!data.positions || typeof data.positions !== 'object') {
+          throw new Error('无效的位置数据格式');
+        }
+        
+        onSuccess(data.positions);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : '导入失败';
+        onError?.(errorMessage);
+      }
+    };
+    
+    reader.readAsText(file);
   };
+  
+  input.click();
 }

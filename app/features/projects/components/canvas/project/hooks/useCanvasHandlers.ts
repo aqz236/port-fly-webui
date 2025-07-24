@@ -14,8 +14,6 @@ import { ProjectCanvasProps, CanvasHandlers } from '../types';
 export function useCanvasHandlers(props: ProjectCanvasProps): CanvasHandlers {
   const queryClient = useQueryClient();
   const {
-    onEditGroup,
-    onDeleteGroup,
     onCreateHost,
     onCreatePort,
     onEditHost,
@@ -26,14 +24,6 @@ export function useCanvasHandlers(props: ProjectCanvasProps): CanvasHandlers {
     onTogglePort,
   } = props;
 
-  // 组操作处理器
-  const handleEditGroup = useCallback((group: Group) => {
-    onEditGroup?.(group);
-  }, [onEditGroup]);
-
-  const handleDeleteGroup = useCallback((groupId: number) => {
-    onDeleteGroup?.(groupId);
-  }, [onDeleteGroup]);
 
   const handleAddHost = useCallback((groupId: number) => {
     onCreateHost?.(groupId);
@@ -159,8 +149,6 @@ export function useCanvasHandlers(props: ProjectCanvasProps): CanvasHandlers {
   }, [onTogglePort]);
 
   return useMemo(() => ({
-    handleEditGroup,
-    handleDeleteGroup,
     handleAddHost,
     handleAddPort,
     handleHostEdit,
@@ -171,8 +159,6 @@ export function useCanvasHandlers(props: ProjectCanvasProps): CanvasHandlers {
     handlePortDelete,
     handlePortToggle,
   }), [
-    handleEditGroup,
-    handleDeleteGroup,
     handleAddHost,
     handleAddPort,
     handleHostEdit,

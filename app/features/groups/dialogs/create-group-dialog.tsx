@@ -130,9 +130,9 @@ export function CreateGroupDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>创建组</DialogTitle>
+          <DialogTitle>创建画布</DialogTitle>
           <DialogDescription>
-            创建一个新的组来组织主机和端口转发资源
+            创建一个新的画布来组织主机和端口转发资源
           </DialogDescription>
         </DialogHeader>
         

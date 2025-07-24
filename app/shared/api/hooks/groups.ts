@@ -1,5 +1,5 @@
 // Group Related Hooks
-// 组相关的 React Query hooks
+// 画布相关的 React Query hooks
 
 import { 
   useQuery, 
@@ -14,7 +14,7 @@ import { CreateGroupData, Group, UpdateGroupData } from '~/shared/types/group'
 
 
 /**
- * 获取组列表 Hook
+ * 获取画布列表 Hook
  * 可按项目ID过滤
  */
 export const useGroups = (
@@ -30,7 +30,7 @@ export const useGroups = (
 }
 
 /**
- * 获取单个组 Hook
+ * 获取单个画布 Hook
  */
 export const useGroup = (
   id: number,
@@ -45,7 +45,7 @@ export const useGroup = (
 }
 
 /**
- * 创建组 Hook
+ * 创建画布 Hook
  * 自动更新相关缓存
  */
 export const useCreateGroup = (
@@ -56,7 +56,7 @@ export const useCreateGroup = (
   return useMutation({
     mutationFn: (data: CreateGroupData) => apiClient.groups.createGroup(data),
     onSuccess: (newGroup) => {
-      // 使组列表缓存失效
+      // 使画布列表缓存失效
       queryClient.invalidateQueries({ queryKey: queryKeys.groups })
       if (newGroup.project_id) {
         queryClient.invalidateQueries({ 
@@ -69,7 +69,7 @@ export const useCreateGroup = (
 }
 
 /**
- * 更新组 Hook
+ * 更新画布 Hook
  * 自动更新相关缓存
  */
 export const useUpdateGroup = (
@@ -80,10 +80,10 @@ export const useUpdateGroup = (
   return useMutation({
     mutationFn: ({ id, data }) => apiClient.groups.updateGroup(id, data),
     onSuccess: (updatedGroup, { id }) => {
-      // 更新组缓存
+      // 更新画布缓存
       queryClient.setQueryData(queryKeys.group(id), updatedGroup)
       
-      // 使组列表缓存失效
+      // 使画布列表缓存失效
       queryClient.invalidateQueries({ queryKey: queryKeys.groups })
       if (updatedGroup.project_id) {
         queryClient.invalidateQueries({ 
@@ -96,7 +96,7 @@ export const useUpdateGroup = (
 }
 
 /**
- * 删除组 Hook
+ * 删除画布 Hook
  * 自动清理相关缓存
  */
 export const useDeleteGroup = (
@@ -107,11 +107,11 @@ export const useDeleteGroup = (
   return useMutation({
     mutationFn: (id: number) => apiClient.groups.deleteGroup(id),
     onSuccess: (_, id) => {
-      // 移除组缓存
+      // 移除画布缓存
       queryClient.removeQueries({ queryKey: queryKeys.group(id) })
       queryClient.removeQueries({ queryKey: queryKeys.groupStats(id) })
       
-      // 使组列表缓存失效
+      // 使画布列表缓存失效
       queryClient.invalidateQueries({ queryKey: queryKeys.groups })
     },
     ...options,

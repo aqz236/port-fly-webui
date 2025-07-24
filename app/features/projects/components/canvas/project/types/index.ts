@@ -7,9 +7,6 @@ import { PortForward } from '~/shared/types/port-forward';
 // 项目画布属性接口
 export interface ProjectCanvasProps {
   project: Project;
-  onCreateGroup?: (projectId: number) => void;
-  onEditGroup?: (group: Group) => void;
-  onDeleteGroup?: (groupId: number) => void;
   onCreateHost?: (groupId: number) => void;
   onEditHost?: (host: Host) => void;
   onDeleteHost?: (hostId: number) => void;
@@ -20,8 +17,8 @@ export interface ProjectCanvasProps {
   onTogglePort?: (portId: number) => void;
 }
 
-// 组节点状态接口
-export interface GroupNodeState {
+// 画布状态接口 - 重构后不再使用 GroupNode，而是直接管理画布状态
+export interface CanvasState {
   [groupId: number]: {
     isExpanded: boolean;
     position: { x: number; y: number };
@@ -30,11 +27,7 @@ export interface GroupNodeState {
 
 // 画布操作处理器接口
 export interface CanvasHandlers {
-  // 组操作
-  handleEditGroup: (group: Group) => void;
-  handleDeleteGroup: (groupId: number) => void;
-  handleAddHost: (groupId: number) => void;
-  handleAddPort: (groupId: number) => void;
+
   
   // 主机操作
   handleHostEdit: (host: Host) => void;
@@ -51,7 +44,7 @@ export interface CanvasHandlers {
 // 布局数据导出格式
 export interface LayoutExportData {
   projectId: number;
-  groupStates: GroupNodeState;
+  canvasStates: CanvasState;
   timestamp: string;
   version?: string;
 }

@@ -61,7 +61,7 @@ export function GroupDialog({
     
     
     if (!formData.name?.trim()) {
-      setError('组名称不能为空')
+      setError('画布名称不能为空')
       return
     }
 
@@ -73,10 +73,10 @@ export function GroupDialog({
         await onSave(formData)
         handleClose()
       } else {
-        setError('保存组功能未正确配置')
+        setError('保存画布功能未正确配置')
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : (isEditMode ? '更新组失败' : '创建组失败'))
+      setError(error instanceof Error ? error.message : (isEditMode ? '更新画布失败' : '创建画布失败'))
     } finally {
       setIsLoading(false)
     }
@@ -135,9 +135,9 @@ export function GroupDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditMode ? '编辑组' : '创建组'}</DialogTitle>
+          <DialogTitle>{isEditMode ? '编辑画布' : '创建画布'}</DialogTitle>
           <DialogDescription>
-            {isEditMode ? '修改组的信息' : '创建一个新的组来组织主机和端口转发资源'}
+            {isEditMode ? '修改画布的信息' : '创建一个新的画布来组织主机和端口转发资源'}
           </DialogDescription>
         </DialogHeader>
         
@@ -150,7 +150,7 @@ export function GroupDialog({
           )}
           
           <div className="grid gap-4 py-4">
-            {/* 组名称 */}
+            {/* 画布名称 */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
                 名称 *
@@ -160,12 +160,12 @@ export function GroupDialog({
                 value={formData.name}
                 onChange={(e) => updateFormData('name', e.target.value)}
                 className="col-span-3"
-                placeholder="输入组名称"
+                placeholder="输入画布名称"
                 required
               />
             </div>
 
-            {/* 组描述 */}
+            {/* 画布描述 */}
             <div className="grid grid-cols-4 items-start gap-4">
               <Label htmlFor="description" className="text-right pt-2">
                 描述
@@ -175,12 +175,12 @@ export function GroupDialog({
                 value={formData.description}
                 onChange={(e) => updateFormData('description', e.target.value)}
                 className="col-span-3"
-                placeholder="组描述（可选）"
+                placeholder="画布描述（可选）"
                 rows={3}
               />
             </div>
 
-            {/* 组颜色 */}
+            {/* 画布颜色 */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">颜色</Label>
               <div className="col-span-3 flex gap-2 flex-wrap">
@@ -201,7 +201,7 @@ export function GroupDialog({
               </div>
             </div>
 
-            {/* 组图标 */}
+            {/* 画布图标 */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">图标</Label>
               <div className="col-span-3 flex items-center gap-2">
@@ -286,7 +286,7 @@ export function GroupDialog({
               取消
             </Button>
             <Button type="submit" disabled={!formData.name?.trim() || isLoading || loading}>
-              {isLoading || loading ? (isEditMode ? "保存中..." : "创建中...") : (isEditMode ? "保存" : "创建组")}
+              {isLoading || loading ? (isEditMode ? "保存中..." : "创建中...") : (isEditMode ? "保存" : "创建画布")}
             </Button>
           </DialogFooter>
         </form>
@@ -297,9 +297,9 @@ export function GroupDialog({
     <Dialog open={showIconPicker} onOpenChange={setShowIconPicker}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>选择组图标</DialogTitle>
+          <DialogTitle>选择画布图标</DialogTitle>
           <DialogDescription>
-            为您的组选择一个图标
+            为您的画布选择一个图标
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
